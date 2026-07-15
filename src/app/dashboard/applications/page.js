@@ -1,11 +1,12 @@
-import Button from "@/components/shared/Button";
+"use client";
+
 import Table from "@/components/dashboard/Table";
 import { applications } from "@/data/dummyData";
 import StatusBadge from "@/components/shared/StatusBadge";
 
 const columns = [
   { key: "candidate", label: "Candidate" },
-  { key: "job", label: "Job" },
+  { key: "email", label: "Email" },
   {
     key: "score",
     label: "Score",
@@ -18,12 +19,7 @@ const columns = [
     label: "Status",
     render: (item) => <StatusBadge status={item.status} />,
   },
-  { key: "appliedDate", label: "Applied" },
-  {
-    key: "actions",
-    label: "Actions",
-    render: () => <Button variant="ghost">Review</Button>,
-  },
+  { key: "appliedDate", label: "Last applied" },
 ];
 
 export default function ApplicationsPage() {
@@ -38,7 +34,11 @@ export default function ApplicationsPage() {
         </h1>
       </div>
 
-      <Table columns={columns} data={applications} />
+      <Table
+        columns={columns}
+        data={applications}
+        rowLink={(item) => `/dashboard/applications/${item.id}`}
+      />
     </div>
   );
 }

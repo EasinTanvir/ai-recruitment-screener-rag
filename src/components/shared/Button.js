@@ -16,6 +16,7 @@ export default function Button({
     ghost:
       "bg-transparent text-slate-700 border-transparent hover:bg-slate-100",
     accent: "bg-sky-500 text-white border-transparent hover:bg-sky-600",
+    danger: "bg-rose-500 text-white border-transparent hover:bg-rose-600",
   };
 
   return (

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Button from "@/components/shared/Button";
@@ -70,7 +72,10 @@ export default function JobApplicationsPage({ params }) {
             </p>
           </div>
         </div>
-        <StatusBadge status={job.status} />
+        <div className="flex flex-wrap items-center gap-3">
+          <StatusBadge status={job.status} />
+          <Button variant="danger">Delete job</Button>
+        </div>
       </div>
 
       <Card className="space-y-6">
@@ -95,6 +100,41 @@ export default function JobApplicationsPage({ params }) {
           </div>
         </div>
       </Card>
+
+      <div className="space-y-6">
+        <div>
+          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
+            Applicant previews
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+            Recent candidate shortlist
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {applications.slice(0, 3).map((applicant) => (
+            <Card
+              key={applicant.candidate}
+              className="rounded-3xl border border-slate-200 p-5"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    {applicant.appliedDate}
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-950">
+                    {applicant.candidate}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Score {applicant.score}%
+                  </p>
+                </div>
+                <StatusBadge status={applicant.status} />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
 
       <div className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

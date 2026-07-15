@@ -218,32 +218,56 @@ export const recentActivity = [
 
 export const applications = [
   {
+    id: "a1",
     candidate: "Maya Patel",
+    email: "maya.patel@example.com",
     job: "AI Talent Acquisition Lead",
     score: 92,
     status: "Interview",
     appliedDate: "Apr 25, 2026",
+    appliedJobs: [
+      { title: "AI Talent Acquisition Lead", status: "Interview" },
+      { title: "Recruiting Operations Manager", status: "Applied" },
+    ],
   },
   {
+    id: "a2",
     candidate: "Jordan Lee",
+    email: "jordan.lee@example.com",
     job: "Senior Product Designer",
     score: 88,
     status: "Shortlisted",
     appliedDate: "Apr 24, 2026",
+    appliedJobs: [
+      { title: "Senior Product Designer", status: "Shortlisted" },
+      { title: "UX Research Lead", status: "Review" },
+    ],
   },
   {
+    id: "a3",
     candidate: "Avery Chen",
+    email: "avery.chen@example.com",
     job: "Growth Marketing Manager",
     score: 76,
     status: "Review",
     appliedDate: "Apr 20, 2026",
+    appliedJobs: [
+      { title: "Growth Marketing Manager", status: "Review" },
+      { title: "Content Strategist", status: "Applied" },
+    ],
   },
   {
+    id: "a4",
     candidate: "Evan Cole",
+    email: "evan.cole@example.com",
     job: "Talent Operations Specialist",
     score: 81,
     status: "Review",
     appliedDate: "Apr 23, 2026",
+    appliedJobs: [
+      { title: "Talent Operations Specialist", status: "Review" },
+      { title: "HR Coordinator", status: "Applied" },
+    ],
   },
 ];
 

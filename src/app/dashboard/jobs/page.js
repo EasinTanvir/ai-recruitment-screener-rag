@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
@@ -10,12 +12,7 @@ const columns = [
     key: "title",
     label: "Title",
     render: (job) => (
-      <Link
-        href={`/dashboard/jobs/${job.id}`}
-        className="font-semibold text-slate-950 hover:text-slate-900"
-      >
-        {job.title}
-      </Link>
+      <div className="font-semibold text-slate-950">{job.title}</div>
     ),
   },
   {
@@ -25,11 +22,6 @@ const columns = [
   },
   { key: "applicants", label: "Applicants" },
   { key: "publishedDate", label: "Published" },
-  {
-    key: "actions",
-    label: "Actions",
-    render: () => <Button variant="ghost">Manage</Button>,
-  },
 ];
 
 export default function JobsPage() {
@@ -69,7 +61,11 @@ export default function JobsPage() {
         </div>
       </Card>
 
-      <Table columns={columns} data={jobs} />
+      <Table
+        columns={columns}
+        data={jobs}
+        rowLink={(job) => `/dashboard/jobs/${job.id}`}
+      />
     </div>
   );
 }

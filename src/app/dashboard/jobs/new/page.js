@@ -1,9 +1,38 @@
+"use client";
+
+import { useForm } from "react-hook-form";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Input from "@/components/shared/Input";
 import Textarea from "@/components/shared/Textarea";
 
 export default function CreateJobPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: "",
+      company: "",
+      location: "",
+      employmentType: "",
+      salary: "",
+      description: "",
+      responsibilities: "",
+      requirements: "",
+      benefits: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log("Job data:", data);
+  };
+
+  const fieldError = (message) => (
+    <p className="mt-2 text-sm text-rose-600">{message}</p>
+  );
+
   return (
     <div className="space-y-8">
       <div>
@@ -20,65 +49,143 @@ export default function CreateJobPage() {
       </div>
 
       <Card className="space-y-8">
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Job title
-            </label>
-            <Input placeholder="Senior Product Designer" />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Job title
+              </label>
+              <Input
+                {...register("title", { required: "Job title is required." })}
+                placeholder="Senior Product Designer"
+              />
+              {errors.title && fieldError(errors.title.message)}
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Company
+              </label>
+              <Input
+                {...register("company", {
+                  required: "Company name is required.",
+                })}
+                placeholder="Atlas Labs"
+              />
+              {errors.company && fieldError(errors.company.message)}
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Location
+              </label>
+              <Input
+                {...register("location", { required: "Location is required." })}
+                placeholder="Remote"
+              />
+              {errors.location && fieldError(errors.location.message)}
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Employment type
+              </label>
+              <Input
+                {...register("employmentType", {
+                  required: "Employment type is required.",
+                })}
+                placeholder="Full-time"
+              />
+              {errors.employmentType &&
+                fieldError(errors.employmentType.message)}
+            </div>
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Company
-            </label>
-            <Input placeholder="Atlas Labs" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Location
-            </label>
-            <Input placeholder="Remote" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Employment type
-            </label>
-            <Input placeholder="Full-time" />
-          </div>
-        </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
-            Short description
-          </label>
-          <Textarea
-            placeholder="Lead product initiatives across mobile and web teams."
-            rows={4}
-          />
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
-            Role responsibilities
-          </label>
-          <Textarea
-            placeholder="Design multi-platform experiences, collaborate with product and engineering teams."
-            rows={4}
-          />
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
-            Requirements
-          </label>
-          <Textarea
-            placeholder="5+ years of experience, strong portfolio, collaboration skills."
-            rows={4}
-          />
-        </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Salary range
+              </label>
+              <Input
+                {...register("salary", {
+                  required: "Salary range is required.",
+                })}
+                placeholder="$120k - $140k"
+              />
+              {errors.salary && fieldError(errors.salary.message)}
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Posted date
+              </label>
+              <Input
+                {...register("postedDate", {
+                  required: "Posted date is required.",
+                })}
+                placeholder="Apr 28, 2026"
+              />
+              {errors.postedDate && fieldError(errors.postedDate.message)}
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Button>Save job draft</Button>
-          <Button variant="secondary">Cancel</Button>
-        </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Short description
+            </label>
+            <Textarea
+              {...register("description", {
+                required: "Short description is required.",
+              })}
+              placeholder="Lead product initiatives across mobile and web teams."
+              rows={4}
+            />
+            {errors.description && fieldError(errors.description.message)}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Role responsibilities
+            </label>
+            <Textarea
+              {...register("responsibilities", {
+                required: "Responsibilities are required.",
+              })}
+              placeholder="Design multi-platform experiences, collaborate with product and engineering teams."
+              rows={4}
+            />
+            {errors.responsibilities &&
+              fieldError(errors.responsibilities.message)}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Requirements
+            </label>
+            <Textarea
+              {...register("requirements", {
+                required: "Requirements are required.",
+              })}
+              placeholder="5+ years of experience, strong portfolio, collaboration skills."
+              rows={4}
+            />
+            {errors.requirements && fieldError(errors.requirements.message)}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Benefits
+            </label>
+            <Textarea
+              {...register("benefits", {
+                required: "Benefits are required.",
+              })}
+              placeholder="Flexible work, equity, health benefits."
+              rows={4}
+            />
+            {errors.benefits && fieldError(errors.benefits.message)}
+          </div>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <Button type="submit">Save job draft</Button>
+            <Button variant="secondary" type="button">
+              Cancel
+            </Button>
+          </div>
+        </form>
       </Card>
     </div>
   );
