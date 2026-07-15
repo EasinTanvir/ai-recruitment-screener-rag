@@ -40,13 +40,13 @@ export async function getUserById(id) {
   return user || null;
 }
 
-export function getAuthTokenFromCookies() {
-  const cookieStore = cookies();
+export async function getAuthTokenFromCookies() {
+  const cookieStore = await cookies();
   return cookieStore.get(COOKIE_NAME)?.value || null;
 }
 
-export function setAuthTokenCookie(token) {
-  const cookieStore = cookies();
+export async function setAuthTokenCookie(token) {
+  const cookieStore = await cookies();
   cookieStore.set({
     name: COOKIE_NAME,
     value: token,
@@ -57,8 +57,8 @@ export function setAuthTokenCookie(token) {
   });
 }
 
-export function clearAuthCookie() {
-  const cookieStore = cookies();
+export async function clearAuthCookie() {
+  const cookieStore = await cookies();
   cookieStore.set({
     name: COOKIE_NAME,
     value: "",

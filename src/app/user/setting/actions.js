@@ -3,6 +3,6 @@
 import { clearAuthCookie } from "@/lib/auth";
 
 export async function logoutAction() {
-  clearAuthCookie();
+  await clearAuthCookie();
   return { success: true };
 }

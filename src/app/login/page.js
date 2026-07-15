@@ -96,10 +96,6 @@ export default function LoginPage() {
                 placeholder="Enter your password"
                 {...register("password", {
                   required: "Password is required.",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters.",
-                  },
                 })}
               />
               {errors.password && fieldError(errors.password.message)}

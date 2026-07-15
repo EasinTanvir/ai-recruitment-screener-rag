@@ -34,7 +34,7 @@ export async function registerAction({ name, email, password }) {
     userId: createdUser.id,
     role: createdUser.role,
   });
-  setAuthTokenCookie(token);
+  await setAuthTokenCookie(token);
 
   return {
     user: {
