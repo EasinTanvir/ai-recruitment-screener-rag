@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Table from "@/components/dashboard/Table";
@@ -40,7 +41,9 @@ export default function JobsPage() {
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="secondary">Filter</Button>
-          <Button>Post job</Button>
+          <Link href="/dashboard/jobs/new">
+            <Button>Post job</Button>
+          </Link>
         </div>
       </div>
 
