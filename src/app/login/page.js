@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
+import { loginAction } from "./actions";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Input from "@/components/shared/Input";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -19,9 +24,26 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = (data) => {
-    toast.success("Login submitted. UI mock only.");
-    console.log("Login data:", data);
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const result = await loginAction(data);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success("Signed in successfully.");
+      if (result?.user?.role === "ADMIN") {
+        router.push("/dashboard");
+      } else {
+        router.push("/user");
+      }
+    } catch (error) {
+      toast.error("Unable to sign in. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fieldError = (message) => (
@@ -84,7 +106,9 @@ export default function LoginPage() {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="submit">Sign in</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
               <Link
                 href="/register"
                 className="text-sm font-medium text-slate-700 transition hover:text-slate-950"

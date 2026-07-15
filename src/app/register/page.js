@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
+import { registerAction } from "./actions";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Input from "@/components/shared/Input";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -20,9 +25,22 @@ export default function RegisterPage() {
     },
   });
 
-  const onSubmit = (data) => {
-    toast.success("Registration submitted. UI mock only.");
-    console.log("Register data:", data);
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const result = await registerAction(data);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success("Account created successfully.");
+      router.push("/user");
+    } catch (error) {
+      toast.error("Unable to create account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fieldError = (message) => (
@@ -103,7 +121,9 @@ export default function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <Button type="submit">Create account</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating account..." : "Create account"}
+              </Button>
               <Link
                 href="/login"
                 className="text-sm font-medium text-slate-700 transition hover:text-slate-950"

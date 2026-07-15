@@ -1,7 +1,11 @@
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
+import LogoutButton from "@/components/shared/LogoutButton";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function UserOverviewPage() {
+export default async function UserOverviewPage() {
+  const currentUser = await getCurrentUser();
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
       <div className="space-y-6">
@@ -18,7 +22,7 @@ export default function UserOverviewPage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button>View applications</Button>
-            <Button variant="secondary">Edit profile</Button>
+            <LogoutButton />
           </div>
         </div>
 
