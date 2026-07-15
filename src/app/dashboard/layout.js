@@ -1,5 +1,6 @@
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-
-export default function DashboardRouteLayout({ children }) {
+import { auth } from "@clerk/nextjs/server";
+export default async function DashboardRouteLayout({ children }) {
+  await auth.protect();
   return <DashboardLayout>{children}</DashboardLayout>;
 }
