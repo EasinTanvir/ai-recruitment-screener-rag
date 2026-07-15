@@ -98,33 +98,6 @@ export default function CreateJobPage() {
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Salary range
-              </label>
-              <Input
-                {...register("salary", {
-                  required: "Salary range is required.",
-                })}
-                placeholder="$120k - $140k"
-              />
-              {errors.salary && fieldError(errors.salary.message)}
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Posted date
-              </label>
-              <Input
-                {...register("postedDate", {
-                  required: "Posted date is required.",
-                })}
-                placeholder="Apr 28, 2026"
-              />
-              {errors.postedDate && fieldError(errors.postedDate.message)}
-            </div>
-          </div>
-
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-700">
               Short description
@@ -138,20 +111,7 @@ export default function CreateJobPage() {
             />
             {errors.description && fieldError(errors.description.message)}
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Role responsibilities
-            </label>
-            <Textarea
-              {...register("responsibilities", {
-                required: "Responsibilities are required.",
-              })}
-              placeholder="Design multi-platform experiences, collaborate with product and engineering teams."
-              rows={4}
-            />
-            {errors.responsibilities &&
-              fieldError(errors.responsibilities.message)}
-          </div>
+
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-700">
               Requirements
@@ -165,22 +125,9 @@ export default function CreateJobPage() {
             />
             {errors.requirements && fieldError(errors.requirements.message)}
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Benefits
-            </label>
-            <Textarea
-              {...register("benefits", {
-                required: "Benefits are required.",
-              })}
-              placeholder="Flexible work, equity, health benefits."
-              rows={4}
-            />
-            {errors.benefits && fieldError(errors.benefits.message)}
-          </div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Button type="submit">Save job draft</Button>
+            <Button type="submit">Create Job</Button>
             <Button variant="secondary" type="button">
               Cancel
             </Button>
