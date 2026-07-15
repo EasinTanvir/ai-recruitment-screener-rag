@@ -247,6 +247,65 @@ export const applications = [
   },
 ];
 
+export const jobApplications = [
+  {
+    jobId: "1",
+    candidate: "Jordan Lee",
+    role: "Senior Product Designer",
+    score: 88,
+    status: "Shortlisted",
+    appliedDate: "Apr 24, 2026",
+  },
+  {
+    jobId: "1",
+    candidate: "Maya Patel",
+    role: "Senior Product Designer",
+    score: 92,
+    status: "Interview",
+    appliedDate: "Apr 25, 2026",
+  },
+  {
+    jobId: "1",
+    candidate: "Harper Quinn",
+    role: "Senior Product Designer",
+    score: 84,
+    status: "Applied",
+    appliedDate: "Apr 24, 2026",
+  },
+  {
+    jobId: "2",
+    candidate: "Evan Cole",
+    role: "AI Talent Acquisition Lead",
+    score: 81,
+    status: "Review",
+    appliedDate: "Apr 23, 2026",
+  },
+  {
+    jobId: "2",
+    candidate: "Avery Chen",
+    role: "AI Talent Acquisition Lead",
+    score: 76,
+    status: "Applied",
+    appliedDate: "Apr 20, 2026",
+  },
+  {
+    jobId: "4",
+    candidate: "Noah Gray",
+    role: "Talent Operations Specialist",
+    score: 89,
+    status: "Interview",
+    appliedDate: "Apr 24, 2026",
+  },
+  {
+    jobId: "4",
+    candidate: "Olivia Park",
+    role: "Talent Operations Specialist",
+    score: 83,
+    status: "Shortlisted",
+    appliedDate: "Apr 22, 2026",
+  },
+];
+
 export const candidates = [
   {
     id: "c1",

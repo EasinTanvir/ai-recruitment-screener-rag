@@ -47,61 +47,32 @@ export default function CreateJobPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Salary range
-            </label>
-            <Input placeholder="$120k - $140k" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Posted date
-            </label>
-            <Input placeholder="Apr 28, 2026" />
-          </div>
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Short description
+          </label>
+          <Textarea
+            placeholder="Lead product initiatives across mobile and web teams."
+            rows={4}
+          />
         </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Short description
-            </label>
-            <Textarea
-              placeholder="Lead product initiatives across mobile and web teams."
-              rows={4}
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Role responsibilities
-            </label>
-            <Textarea
-              placeholder="Design multi-platform experiences, collaborate with product and engineering teams."
-              rows={4}
-            />
-          </div>
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Role responsibilities
+          </label>
+          <Textarea
+            placeholder="Design multi-platform experiences, collaborate with product and engineering teams."
+            rows={4}
+          />
         </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Requirements
-            </label>
-            <Textarea
-              placeholder="5+ years of experience, strong portfolio, collaboration skills."
-              rows={4}
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Benefits
-            </label>
-            <Textarea
-              placeholder="Flexible work, equity, health benefits."
-              rows={4}
-            />
-          </div>
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Requirements
+          </label>
+          <Textarea
+            placeholder="5+ years of experience, strong portfolio, collaboration skills."
+            rows={4}
+          />
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">

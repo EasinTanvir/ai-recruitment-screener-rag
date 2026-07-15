@@ -10,7 +10,12 @@ const columns = [
     key: "title",
     label: "Title",
     render: (job) => (
-      <div className="font-semibold text-slate-950">{job.title}</div>
+      <Link
+        href={`/dashboard/jobs/${job.id}`}
+        className="font-semibold text-slate-950 hover:text-slate-900"
+      >
+        {job.title}
+      </Link>
     ),
   },
   {
@@ -41,7 +46,7 @@ export default function JobsPage() {
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="secondary">Filter</Button>
-          <Link href="/dashboard/jobs/new">
+          <Link href="/dashboard/jobs/new" className="inline-flex">
             <Button>Post job</Button>
           </Link>
         </div>
