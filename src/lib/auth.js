@@ -9,11 +9,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret";
 const COOKIE_NAME = "auth_token";
 
 export async function hashPassword(password) {
-  return bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 10);
 }
 
 export async function verifyPassword(password, hash) {
-  return bcrypt.compare(password, hash);
+  return await bcrypt.compare(password, hash);
 }
 
 export function createAuthToken(payload) {

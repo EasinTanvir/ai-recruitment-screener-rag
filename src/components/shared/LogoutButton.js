@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Button from "@/components/shared/Button";
+import { logoutAction } from "@/app/user/setting/actions";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -13,13 +14,7 @@ export default function LogoutButton() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed.");
-      }
+      await logoutAction();
 
       toast.success("Logged out successfully.");
       router.push("/login");
