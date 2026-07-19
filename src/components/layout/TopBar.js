@@ -1,5 +1,6 @@
 import { Bell, Search, Sparkles } from "lucide-react";
 import SearchBar from "@/components/shared/SearchBar";
+import Link from "next/link";
 
 export default function TopBar() {
   return (
@@ -15,13 +16,14 @@ export default function TopBar() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <SearchBar placeholder="Search dashboard" />
-        <button
+        <Link
+          href="/dashboard/jobs/new"
           type="button"
           className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-slate-900/10 transition hover:bg-slate-800"
         >
           <Sparkles className="h-4 w-4" />
-          New view
-        </button>
+          Create Job
+        </Link>
         <button
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition hover:bg-slate-200"
