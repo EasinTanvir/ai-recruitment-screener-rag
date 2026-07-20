@@ -23,7 +23,7 @@ export async function loginAction({ email, password }) {
   }
 
   const token = createAuthToken({ userId: user.id, role: user.role });
-  console.log("Token created:", token);
+
   await setAuthTokenCookie(token);
 
   return {

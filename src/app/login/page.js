@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
-import { loginAction } from "./actions";
+
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Input from "@/components/shared/Input";
+import { loginAction } from "../../../serverAction/auth/loginAction";
 
 export default function LoginPage() {
   const router = useRouter();

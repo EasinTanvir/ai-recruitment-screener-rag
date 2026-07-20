@@ -70,7 +70,7 @@ export async function clearAuthCookie() {
 }
 
 export async function getCurrentUser() {
-  const token = getAuthTokenFromCookies();
+  const token = await getAuthTokenFromCookies();
   if (!token) return null;
 
   const payload = verifyAuthToken(token);

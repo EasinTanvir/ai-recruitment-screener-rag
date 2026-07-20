@@ -1,34 +1,54 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import Input from "@/components/shared/Input";
 import Textarea from "@/components/shared/Textarea";
+
 import { Zap } from "lucide-react";
+import { createJobAction } from "../../../../../serverAction/createJobAction";
 
 export default function CreateJobPage() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
       title: "",
-      company: "",
-      location: "",
-      employmentType: "",
-      salary: "",
+      companyName: "",
       description: "",
-      responsibilities: "",
       requirements: "",
-      benefits: "",
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Job data:", data);
+  const onSubmit = async (data) => {
+    setLoading(true);
+
+    const res = await createJobAction(data);
+
+    if (res.success) {
+      toast.success(res.message);
+
+      reset();
+
+      router.push("/dashboard/jobs");
+    } else {
+      console.log("errors", res.message);
+      toast.error(res.message);
+    }
+
+    setLoading(false);
   };
 
   const fieldError = (message) => (
@@ -36,10 +56,10 @@ export default function CreateJobPage() {
   );
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="max-w-4xl space-y-8">
       <div>
         <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
-          Create job
+          Create Job
         </p>
       </div>
 
@@ -50,41 +70,53 @@ export default function CreateJobPage() {
               <label className="mb-2 block text-sm font-semibold text-slate-700">
                 Job title
               </label>
+
               <Input
-                {...register("title", { required: "Job title is required." })}
+                {...register("title", {
+                  required: "Job title is required.",
+                })}
                 placeholder="Senior Product Designer"
               />
+
               {errors.title && fieldError(errors.title.message)}
             </div>
+
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
                 Company
               </label>
+
               <Input
-                {...register("company", {
+                {...register("companyName", {
                   required: "Company name is required.",
                 })}
                 placeholder="Atlas Labs"
               />
-              {errors.company && fieldError(errors.company.message)}
+
+              {errors.companyName && fieldError(errors.companyName.message)}
             </div>
           </div>
 
           <div className="relative">
             <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Short description
+              Description
             </label>
+
             <Textarea
               {...register("description", {
-                required: "Short description is required.",
+                required: "Description is required.",
               })}
-              placeholder="Lead product initiatives across mobile and web teams."
               rows={8}
             />
+
             {errors.description && fieldError(errors.description.message)}
 
-            <Button variant="ghost" className="absolute right-2 top-10">
-              <Zap />
+            <Button
+              variant="ghost"
+              type="button"
+              className="absolute right-2 top-10"
+            >
+              <Zap size={18} />
             </Button>
           </div>
 
@@ -92,22 +124,31 @@ export default function CreateJobPage() {
             <label className="mb-2 block text-sm font-semibold text-slate-700">
               Requirements
             </label>
+
             <Textarea
               {...register("requirements", {
                 required: "Requirements are required.",
               })}
-              placeholder="5+ years of experience, strong portfolio, collaboration skills."
               rows={8}
             />
+
             {errors.requirements && fieldError(errors.requirements.message)}
-            <Button variant="ghost" className="absolute right-2 top-10">
-              <Zap />
-            </Button>{" "}
+
+            <Button
+              variant="ghost"
+              type="button"
+              className="absolute right-2 top-10"
+            >
+              <Zap size={18} />
+            </Button>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Button type="submit">Create Job</Button>
-            <Button variant="secondary" type="button">
+          <div className="flex gap-4">
+            <Button type="submit" disabled={loading} loading={loading}>
+              Create Job
+            </Button>
+
+            <Button type="button" variant="secondary" disabled={loading}>
               Cancel
             </Button>
           </div>
