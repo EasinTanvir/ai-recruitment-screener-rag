@@ -1,30 +1,14 @@
-"use client";
-
 import Link from "next/link";
+
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
-import Table from "@/components/dashboard/Table";
-import StatusBadge from "@/components/shared/StatusBadge";
-import { jobs } from "@/data/dummyData";
+import JobTable from "@/components/dashboard/JobTable";
 
-const columns = [
-  {
-    key: "title",
-    label: "Title",
-    render: (job) => (
-      <div className="font-semibold text-slate-950">{job.title}</div>
-    ),
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (job) => <StatusBadge status={job.status} />,
-  },
-  { key: "applicants", label: "Applicants" },
-  { key: "publishedDate", label: "Published" },
-];
+import { getJobs } from "../../../../serverAction/queries/jobs";
 
-export default function JobsPage() {
+const JobsPage = async () => {
+  const jobs = await getJobs();
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -32,12 +16,15 @@ export default function JobsPage() {
           <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
             Jobs
           </p>
+
           <h1 className="mt-2 text-3xl font-semibold text-slate-950">
             Open roles library
           </h1>
         </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="secondary">Filter</Button>
+
           <Link href="/dashboard/jobs/new" className="inline-flex">
             <Button>Post job</Button>
           </Link>
@@ -51,21 +38,21 @@ export default function JobsPage() {
               Search and refine your roles by hiring status.
             </p>
           </div>
+
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               placeholder="Search roles"
             />
+
             <Button variant="secondary">Export</Button>
           </div>
         </div>
       </Card>
 
-      <Table
-        columns={columns}
-        data={jobs}
-        rowLink={(job) => `/dashboard/jobs/${job.id}`}
-      />
+      <JobTable jobs={jobs} />
     </div>
   );
-}
+};
+
+export default JobsPage;

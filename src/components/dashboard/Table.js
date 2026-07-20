@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React from "react";
 
 export default function Table({ columns, data, rowLink }) {
   const router = useRouter();
@@ -21,6 +20,7 @@ export default function Table({ columns, data, rowLink }) {
             ))}
           </tr>
         </thead>
+
         <tbody>
           {data.map((row, index) => {
             const href = rowLink?.(row);
@@ -33,12 +33,15 @@ export default function Table({ columns, data, rowLink }) {
                 } ${index % 2 === 0 ? "bg-white" : "bg-slate-50"}`}
                 onClick={(event) => {
                   if (!href) return;
+
                   const tag = event.target.tagName;
+
                   if (
                     ["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(tag)
                   ) {
                     return;
                   }
+
                   router.push(href);
                 }}
               >
