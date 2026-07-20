@@ -72,7 +72,7 @@ export const jobs = pgTable("jobs", {
 
   requirements: text("requirements").notNull(),
 
-  status: jobStatusEnum("status").default("DRAFT").notNull(),
+  status: jobStatusEnum("status").default("PUBLISHED").notNull(),
 
   publishedAt: timestamp("published_at"),
 
