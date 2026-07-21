@@ -4,21 +4,35 @@ import { useState } from "react";
 
 import Button from "../shared/Button";
 import ResumeDropzone from "./ResumeDropzone";
+import { useEdgeStore } from "@/lib/edgestore";
 
 export default function ApplyForm({ jobId }) {
+  const { edgestore } = useEdgeStore();
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!file) {
-      alert("Please upload your resume.");
-      return;
+    if (!file) return;
+
+    setLoading(true);
+
+    try {
+      const res = await edgestore.publicFiles.upload({
+        file,
+      });
+
+      console.log(res);
+
+      // Next step:
+      // await applyJobAction({
+      //   jobId,
+      //   resumeUrl: res.url,
+      // });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    console.log(file);
-
-    // Upload
-    // Parse PDF
-    // Call server action
   };
 
   return (
@@ -31,8 +45,8 @@ export default function ApplyForm({ jobId }) {
 
       <ResumeDropzone file={file} onChange={setFile} />
 
-      <Button className="w-full" onClick={handleSubmit}>
-        Apply Now
+      <Button className="w-full" onClick={handleSubmit} disabled={loading}>
+        {loading ? "Uploading..." : "Apply Now"}
       </Button>
     </div>
   );
