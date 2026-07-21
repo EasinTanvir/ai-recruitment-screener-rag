@@ -74,13 +74,13 @@ export default async function JobDetailsPage({ params }) {
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <p className="text-sm text-slate-500">Applicants</p>
 
                 <p className="mt-2 text-3xl font-semibold text-slate-950">
                   {job.applicants.length}
                 </p>
-              </div>
+              </div> */}
 
               <div>
                 <p className="text-sm text-slate-500">Published</p>
