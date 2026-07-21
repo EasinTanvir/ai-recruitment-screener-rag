@@ -3,9 +3,16 @@
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { applications, jobs } from "@/lib/schema";
+import {
+  applications,
+  applicantMetadata,
+  aiEvaluations,
+  jobs,
+} from "@/lib/schema";
+
 import { authorize } from "@/lib/authorization";
 import { downloadPdf, extractPdfText } from "@/lib/pdf";
+import { evaluateCandidate } from "@/lib/evaluateCandidate";
 
 export async function applyJobAction({ jobId, resumeUrl }) {
   try {
@@ -17,10 +24,23 @@ export async function applyJobAction({ jobId, resumeUrl }) {
 
     const candidateId = auth.user.id;
 
-    // Verify job exists
+    if (!resumeUrl) {
+      return {
+        success: false,
+        message: "Resume upload failed.",
+      };
+    }
+
+    // --------------------------------------------------
+    // Verify Job
+    // --------------------------------------------------
+
     const [job] = await db
       .select({
         id: jobs.id,
+        title: jobs.title,
+        description: jobs.description,
+        requirements: jobs.requirements,
         status: jobs.status,
       })
       .from(jobs)
@@ -41,9 +61,14 @@ export async function applyJobAction({ jobId, resumeUrl }) {
       };
     }
 
-    // Prevent duplicate applications
+    // --------------------------------------------------
+    // Duplicate Check
+    // --------------------------------------------------
+
     const [existingApplication] = await db
-      .select({ id: applications.id })
+      .select({
+        id: applications.id,
+      })
       .from(applications)
       .where(
         and(
@@ -60,20 +85,63 @@ export async function applyJobAction({ jobId, resumeUrl }) {
       };
     }
 
-    // Download & parse resume
+    // --------------------------------------------------
+    // Resume Parsing
+    // --------------------------------------------------
+
     const buffer = await downloadPdf(resumeUrl);
+
     const resumeText = await extractPdfText(buffer);
 
-    // Save application
-    const [application] = await db
-      .insert(applications)
-      .values({
-        jobId,
-        candidateId,
-        resumeUrl,
-        resumeText,
-      })
-      .returning();
+    // --------------------------------------------------
+    // AI Evaluation
+    // --------------------------------------------------
+
+    const evaluation = await evaluateCandidate({
+      title: job.title,
+      description: job.description,
+      requirements: job.requirements,
+      resumeText,
+    });
+
+    // --------------------------------------------------
+    // Save Everything
+    // --------------------------------------------------
+
+    const application = await db.transaction(async (tx) => {
+      // Application
+
+      const [newApplication] = await tx
+        .insert(applications)
+        .values({
+          jobId,
+          candidateId,
+          resumeUrl,
+          resumeText,
+        })
+        .returning();
+
+      // Metadata
+
+      await tx.insert(applicantMetadata).values({
+        applicationId: newApplication.id,
+        firstName: evaluation.metadata.firstName,
+        lastName: evaluation.metadata.lastName,
+        email: evaluation.metadata.email,
+      });
+
+      // AI Evaluation
+
+      await tx.insert(aiEvaluations).values({
+        applicationId: newApplication.id,
+        overallScore: evaluation.overallScore,
+        summary: evaluation.summary,
+        rubrics: evaluation.rubrics,
+        createdBy: auth.user.id,
+      });
+
+      return newApplication;
+    });
 
     return {
       success: true,
@@ -81,11 +149,11 @@ export async function applyJobAction({ jobId, resumeUrl }) {
       data: application,
     };
   } catch (error) {
-    console.error("Failed to submit application:", error);
+    console.error("Application submission failed:", error);
 
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message: "Something went wrong while submitting your application.",
     };
   }
 }
