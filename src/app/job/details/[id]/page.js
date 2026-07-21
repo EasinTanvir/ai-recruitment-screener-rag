@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Button from "@/components/shared/Button";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { getJobById } from "../../../../../serverAction/queries/jobs";
+import ApplyForm from "@/components/applyJob/ApplyForm";
 
 function Section({ title, children }) {
   return (
@@ -96,7 +97,7 @@ export default async function JobDetailsPage({ params }) {
               </div>
             </div>
 
-            <Button className="mt-8 w-full">Apply Now</Button>
+            <ApplyForm jobId={job.id} />
           </div>
         </div>
       </div>
