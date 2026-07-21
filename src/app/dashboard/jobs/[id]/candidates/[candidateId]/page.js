@@ -2,12 +2,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Mail, FileText, RotateCcw } from "lucide-react";
-import { getApplicantById } from "../../../../../../../serverAction/queries/applications";
+import {
+  getApplicantById,
+  getApplicantsByJobId,
+} from "../../../../../../../serverAction/queries/applications";
 
 const ViewCandidate = async ({ params }) => {
   const { id, candidateId } = await params;
   console.log({ id, candidateId });
-  const application = await getApplicantById(candidateId);
+  const application = await getApplicantsByJobId(candidateId);
 
   if (!application) notFound();
 

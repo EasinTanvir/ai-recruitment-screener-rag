@@ -39,3 +39,26 @@ export async function getApplicantById(applicationId) {
 
   return application;
 }
+
+export async function getApplicantsByJobId(jobId) {
+  return await db
+    .select({
+      id: applications.id,
+      status: applications.status,
+      createdAt: applications.createdAt,
+
+      firstName: applicantMetadata.firstName,
+      lastName: applicantMetadata.lastName,
+      email: applicantMetadata.email,
+
+      overallScore: aiEvaluations.overallScore,
+    })
+    .from(applications)
+    .leftJoin(
+      applicantMetadata,
+      eq(applicantMetadata.applicationId, applications.id),
+    )
+    .leftJoin(aiEvaluations, eq(aiEvaluations.applicationId, applications.id))
+    .where(eq(applications.jobId, Number(jobId)))
+    .orderBy(desc(applications.createdAt));
+}
