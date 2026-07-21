@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import Button from "@/components/shared/Button";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { getJobById } from "../../../../../serverAction/queries/jobs";
 import ApplyForm from "@/components/applyJob/ApplyForm";
@@ -97,7 +96,7 @@ export default async function JobDetailsPage({ params }) {
               </div>
             </div>
 
-            <ApplyForm jobId={job.id} />
+            <ApplyForm jobId={job.id} alreadyApplied={job.alreadyApplied} />
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { FileText, UploadCloud } from "lucide-react";
 
-export default function ResumeDropzone({ file, onChange, disabled = false }) {
+export default function ResumeDropzone({ file, onChange, disabled }) {
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (!acceptedFiles.length) return;

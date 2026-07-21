@@ -7,13 +7,16 @@ import ResumeDropzone from "./ResumeDropzone";
 import { useEdgeStore } from "@/lib/edgestore";
 import { applyJobAction } from "../../../serverAction/applyJobAction";
 
-export default function ApplyForm({ jobId }) {
+export default function ApplyForm({ jobId, alreadyApplied }) {
   const { edgestore } = useEdgeStore();
+
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const disabled = loading || alreadyApplied;
+
   const handleSubmit = async () => {
-    if (!file) return;
+    if (disabled || !file) return;
 
     setLoading(true);
 
@@ -22,8 +25,6 @@ export default function ApplyForm({ jobId }) {
         file,
       });
 
-      console.log("upload url", upload.url);
-
       const result = await applyJobAction({
         jobId,
         resumeUrl: upload.url,
@@ -31,7 +32,7 @@ export default function ApplyForm({ jobId }) {
 
       console.log(result);
     } catch (error) {
-      console.error("upload failed", error);
+      console.error("Upload failed", error);
     } finally {
       setLoading(false);
     }
@@ -39,16 +40,37 @@ export default function ApplyForm({ jobId }) {
 
   return (
     <div className="mt-8 space-y-5">
+      {alreadyApplied && (
+        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+          <p className="font-semibold text-green-700">✓ Already Applied</p>
+
+          <p className="mt-1 text-sm text-green-600">
+            You have already applied for this position. Multiple applications
+            for the same job are not allowed.
+          </p>
+        </div>
+      )}
+
       <div>
         <p className="font-semibold">Upload Resume</p>
 
         <p className="text-sm text-slate-500">PDF only (max 10MB)</p>
       </div>
 
-      <ResumeDropzone file={file} onChange={setFile} />
+      <div className={alreadyApplied ? "pointer-events-none opacity-50" : ""}>
+        <ResumeDropzone
+          file={file}
+          onChange={setFile}
+          disabled={alreadyApplied}
+        />
+      </div>
 
-      <Button className="w-full" onClick={handleSubmit} disabled={loading}>
-        {loading ? "Uploading..." : "Apply Now"}
+      <Button className="w-full" onClick={handleSubmit} disabled={disabled}>
+        {loading
+          ? "Uploading..."
+          : alreadyApplied
+            ? "Already Applied"
+            : "Apply Now"}
       </Button>
     </div>
   );
