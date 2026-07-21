@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "../shared/Button";
 import ResumeDropzone from "./ResumeDropzone";
 import { useEdgeStore } from "@/lib/edgestore";
+import { applyJobAction } from "../../../serverAction/applyJobAction";
 
 export default function ApplyForm({ jobId }) {
   const { edgestore } = useEdgeStore();
@@ -17,19 +18,20 @@ export default function ApplyForm({ jobId }) {
     setLoading(true);
 
     try {
-      const res = await edgestore.publicFiles.upload({
+      const upload = await edgestore.publicFiles.upload({
         file,
       });
 
-      console.log(res);
+      console.log("upload url", upload.url);
 
-      // Next step:
-      // await applyJobAction({
-      //   jobId,
-      //   resumeUrl: res.url,
-      // });
+      const result = await applyJobAction({
+        jobId,
+        resumeUrl: upload.url,
+      });
+
+      console.log(result);
     } catch (error) {
-      console.error(error);
+      console.error("upload failed", error);
     } finally {
       setLoading(false);
     }
