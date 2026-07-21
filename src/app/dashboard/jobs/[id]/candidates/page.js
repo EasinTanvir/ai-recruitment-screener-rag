@@ -1,7 +1,6 @@
-// app/dashboard/jobs/[id]/candidates/page.jsx
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, ChevronRight } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { getApplicantsByJobId } from "../../../../../../serverAction/queries/applications";
 import { getJobById } from "../../../../../../serverAction/queries/jobs";
 
@@ -51,7 +50,7 @@ const CandidatesPage = async ({ params }) => {
               <th className="px-5 py-3 font-medium">Score</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Applied</th>
-              <th className="px-5 py-3"></th>
+              <th className="px-5 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -102,12 +101,12 @@ const CandidatesPage = async ({ params }) => {
                 <td className="px-5 py-4 text-slate-500">
                   {new Date(applicant.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-5 py-4 text-right">
+
+                <td>
                   <Link
                     href={`/dashboard/jobs/${id}/candidates/${applicant.id}`}
-                    className="inline-flex items-center gap-1 text-slate-400 hover:text-slate-900"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    View
                   </Link>
                 </td>
               </tr>
