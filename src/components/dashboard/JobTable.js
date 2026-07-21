@@ -22,7 +22,7 @@ const columns = [
   {
     key: "applications",
     label: "Applicants",
-    render: (job) => job.applications?.length ?? 0,
+    render: (job) => job.applicantCount ?? 0,
   },
   {
     key: "publishedAt",
