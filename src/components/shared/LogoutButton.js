@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Button from "@/components/shared/Button";
-import { logoutAction } from "@/app/user/setting/actions";
+import { logoutAction } from "../../../serverAction/auth/logoutAction";
 
 export default function LogoutButton() {
   const router = useRouter();
