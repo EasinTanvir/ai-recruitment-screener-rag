@@ -22,11 +22,20 @@ export default function ChatWindow({
   const messagesRef = useRef(null);
   const bottomRef = useRef(null);
 
+  const textareaRef = useRef(null);
+
+  const handleInput = (e) => {
+    setInput(e.target.value);
+
+    e.target.style.height = "auto";
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`;
+  };
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [messages, loading]);
+  }, [messages, loading, open]);
   return (
     <AnimatePresence>
       {open && (
@@ -100,24 +109,47 @@ export default function ChatWindow({
             onSubmit={(e) => {
               e.preventDefault();
               onSend(input);
-            }}
-            className="flex items-center gap-2 p-4"
-          >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask anything..."
-              disabled={loading}
-              className="flex-1 rounded-xl border px-4 py-3 text-sm outline-none transition focus:border-blue-500 disabled:bg-slate-100"
-            />
 
-            <button
-              type="submit"
-              disabled={loading || !input.trim()}
-              className="rounded-xl bg-blue-600 p-3 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <SendHorizonal size={18} />
-            </button>
+              if (textareaRef.current) {
+                textareaRef.current.style.height = "auto";
+              }
+            }}
+            className="border-t bg-white p-4"
+          >
+            <div className="flex items-end gap-3 rounded-2xl border bg-white px-3 py-2 shadow-sm transition focus-within:border-blue-500">
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                value={input}
+                disabled={loading}
+                onChange={handleInput}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    onSend(input);
+
+                    if (textareaRef.current) {
+                      textareaRef.current.style.height = "auto";
+                    }
+                  }
+                }}
+                placeholder="Ask anything..."
+                className="max-h-[140px] flex-1 resize-none overflow-y-auto bg-transparent py-2 text-sm outline-none placeholder:text-slate-400"
+              />
+
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <SendHorizonal size={18} />
+              </button>
+            </div>
+
+            <p className="mt-2 text-center text-[11px] text-slate-400">
+              Press <span className="font-medium">Enter</span> to send •{" "}
+              <span className="font-medium">Shift + Enter</span> for a new line
+            </p>
           </form>
         </motion.div>
       )}
