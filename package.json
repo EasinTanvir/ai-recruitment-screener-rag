@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "seed:jobs": "node --env-file=.env scripts/seedJobs.js",
     "lint": "eslint",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate"
@@ -18,6 +19,7 @@
     "@neondatabase/serverless": "^1.1.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.24.0",
