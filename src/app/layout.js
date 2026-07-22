@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import Navbar from "@/components/Navbar";
 import { getAuthTokenFromCookies, getCurrentUser } from "@/lib/auth";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }) {
           <Toaster position="top-center" />
           <EdgeStoreProvider>{children}</EdgeStoreProvider>
         </main>
+        <Footer />
       </body>
     </html>
   );
