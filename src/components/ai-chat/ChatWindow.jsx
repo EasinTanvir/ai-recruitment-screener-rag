@@ -4,8 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bot, SendHorizonal } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
+import { useEffect, useRef } from "react";
 
-const suggestions = ["React jobs", "Frontend Developer", "Remote jobs"];
+const suggestions = [
+  "Any React jobs Available?",
+  "Any Frontend Developer jobs Available?",
+];
 
 export default function ChatWindow({
   open,
@@ -15,6 +19,14 @@ export default function ChatWindow({
   setInput,
   onSend,
 }) {
+  const messagesRef = useRef(null);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
   return (
     <AnimatePresence>
       {open && (
@@ -55,17 +67,21 @@ export default function ChatWindow({
 
           {/* Messages */}
 
-          <div className="flex-1 space-y-4 overflow-y-auto p-5">
+          <div
+            ref={messagesRef}
+            className="flex-1 space-y-4 overflow-y-auto p-5"
+          >
             {messages.map((message) => (
               <ChatMessage key={message.id} {...message} />
             ))}
 
             {loading && <TypingIndicator />}
+            <div ref={bottomRef} />
           </div>
 
           {/* Suggestions */}
 
-          <div className="flex flex-wrap gap-2 border-y p-3">
+          {/* <div className="flex flex-wrap gap-2 border-y p-3">
             {suggestions.map((item) => (
               <button
                 key={item}
@@ -76,7 +92,7 @@ export default function ChatWindow({
                 {item}
               </button>
             ))}
-          </div>
+          </div> */}
 
           {/* Input */}
 
