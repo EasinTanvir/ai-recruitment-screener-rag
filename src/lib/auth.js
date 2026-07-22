@@ -6,7 +6,7 @@ import { db } from "./db";
 import { users } from "./schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret";
-const COOKIE_NAME = "auth_token";
+export const COOKIE_NAME = "auth_token";
 
 export async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
