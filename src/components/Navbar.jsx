@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import LogoutButton from "./shared/LogoutButton";
 
 const links = [
@@ -14,6 +15,10 @@ const links = [
     href: "/jobs",
   },
   {
+    label: "Profile",
+    href: "/user",
+  },
+  {
     label: "Dashboard",
     href: "/dashboard",
   },
@@ -23,11 +28,24 @@ const links = [
   },
 ];
 
-const Navbar = async ({ isAuthenticated }) => {
+const Navbar = ({ isAuthenticated, isAdmin }) => {
   const pathname = usePathname();
-  const navItems = isAuthenticated
-    ? links.filter((item) => item.href !== "/login")
-    : links.filter((item) => item.href !== "/dashboard");
+
+  const navItems = links.filter((link) => {
+    switch (link.href) {
+      case "/login":
+        return !isAuthenticated;
+
+      case "/user":
+        return isAuthenticated;
+
+      case "/dashboard":
+        return isAuthenticated && isAdmin;
+
+      default:
+        return true;
+    }
+  });
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -39,7 +57,7 @@ const Navbar = async ({ isAuthenticated }) => {
           HireFlow<span className="text-slate-400">.</span>
         </Link>
 
-        <div className="flex items-center ">
+        <div className="flex items-center gap-3">
           <nav className="flex items-center gap-2">
             {navItems.map((link) => {
               const active =
@@ -61,6 +79,7 @@ const Navbar = async ({ isAuthenticated }) => {
               );
             })}
           </nav>
+
           {isAuthenticated && <LogoutButton />}
         </div>
       </div>

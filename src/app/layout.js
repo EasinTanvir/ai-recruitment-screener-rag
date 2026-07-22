@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import Navbar from "@/components/Navbar";
-import { getAuthTokenFromCookies } from "@/lib/auth";
+import { getAuthTokenFromCookies, getCurrentUser } from "@/lib/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,8 +23,10 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const cookie = await getAuthTokenFromCookies();
-  const isAuthenticated = !!cookie;
+  const user = await getCurrentUser();
+
+  const isAuthenticated = !!user;
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <html
@@ -32,7 +34,7 @@ export default async function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-slate-100 text-slate-950">
-        <Navbar isAuthenticated={isAuthenticated} />
+        <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
         <main>
           <Toaster position="top-center" />
           <EdgeStoreProvider>{children}</EdgeStoreProvider>
