@@ -4,8 +4,30 @@ import { jobs, applications } from "@/lib/schema";
 import { authorize } from "@/lib/authorization";
 import { and, desc, eq, sql } from "drizzle-orm";
 
-export async function getJobs() {
-  return await db.select().from(jobs).orderBy(desc(jobs.createdAt));
+export async function getJobs(page = 1, limit = 6) {
+  const offset = (page - 1) * limit;
+
+  const [items, [{ total }]] = await Promise.all([
+    db
+      .select()
+      .from(jobs)
+      .orderBy(desc(jobs.createdAt))
+      .limit(limit)
+      .offset(offset),
+
+    db
+      .select({
+        total: sql`count(*)`.mapWith(Number),
+      })
+      .from(jobs),
+  ]);
+
+  return {
+    jobs: items,
+    total,
+    totalPages: Math.ceil(total / limit),
+    currentPage: page,
+  };
 }
 export async function getJobById(id) {
   const jobId = Number(id);
