@@ -6,6 +6,7 @@ import { EdgeStoreProvider } from "@/lib/edgestore";
 import Navbar from "@/components/Navbar";
 import { getAuthTokenFromCookies, getCurrentUser } from "@/lib/auth";
 import Footer from "@/components/Footer";
+import AiChat from "@/components/ai-chat/AiChat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }) {
       <body className="min-h-full bg-slate-100 text-slate-950">
         <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
         <main>
+          <AiChat />
           <Toaster position="top-center" />
           <EdgeStoreProvider>{children}</EdgeStoreProvider>
         </main>
