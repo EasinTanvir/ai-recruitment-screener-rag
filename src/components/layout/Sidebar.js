@@ -16,15 +16,6 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden w-72 shrink-0 flex-col gap-6 border-r border-slate-200 bg-slate-50 px-6 py-8 xl:flex">
-      <div className="space-y-1">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-          Recruiter HQ
-        </p>
-        <p className="text-2xl font-semibold tracking-tight text-slate-950">
-          AI Recruiter
-        </p>
-      </div>
-
       <nav className="flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
           const Icon = item.icon;
