@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 export default function ApplyForm({ jobId, alreadyApplied }) {
   const { edgestore } = useEdgeStore();
   const router = useRouter();
+  const [status, setStatus] = useState("");
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -24,23 +25,34 @@ export default function ApplyForm({ jobId, alreadyApplied }) {
     setLoading(true);
 
     try {
+      setStatus("Uploading resume...");
+
       const upload = await edgestore.publicFiles.upload({
         file,
       });
+
+      setStatus("Analyzing your application...");
 
       const result = await applyJobAction({
         jobId,
         resumeUrl: upload.url,
       });
 
-      toast.success("Applied Successfully");
-      router.refresh();
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
 
-      //console.log(result);
+      toast.success("Application submitted successfully!");
+
+      router.refresh();
     } catch (error) {
-      console.error("Upload failed", error);
+      console.error(error);
+
+      toast.error("Failed to submit application.");
     } finally {
       setLoading(false);
+      setStatus("");
     }
   };
 
@@ -72,11 +84,17 @@ export default function ApplyForm({ jobId, alreadyApplied }) {
       </div>
 
       <Button className="w-full" onClick={handleSubmit} disabled={disabled}>
-        {loading
-          ? "Uploading..."
-          : alreadyApplied
-            ? "Already Applied"
-            : "Apply Now"}
+        {loading ? (
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+
+            <span>{status}</span>
+          </div>
+        ) : alreadyApplied ? (
+          "Already Applied"
+        ) : (
+          "Apply Now"
+        )}
       </Button>
     </div>
   );

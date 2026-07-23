@@ -46,6 +46,7 @@ export const users = pgTable("users", {
 
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+export const userByEmail = (email) => eq(users.email, email);
 
 /* ===========================
    JOBS
