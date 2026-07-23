@@ -1,74 +1,87 @@
+import Link from "next/link";
+
 import Card from "@/components/shared/Card";
-import Button from "@/components/shared/Button";
+import StatusBadge from "@/components/shared/StatusBadge";
+import { getCurrentUser } from "@/lib/auth";
+import { getUserApplications } from "../../../../serverAction/getUserApplications";
 
-const applications = [
-  {
-    id: "1",
-    role: "AI Talent Acquisition Lead",
-    company: "Nexa People",
-    status: "Interview scheduled",
-    submitted: "Apr 25, 2026",
-  },
-  {
-    id: "2",
-    role: "Senior Product Designer",
-    company: "Atlas Labs",
-    status: "Shortlisted",
-    submitted: "Apr 24, 2026",
-  },
-  {
-    id: "3",
-    role: "Growth Marketing Manager",
-    company: "HumanScale",
-    status: "Under review",
-    submitted: "Apr 20, 2026",
-  },
-];
+export default async function UserApplicationsPage() {
+  const currentUser = await getCurrentUser();
 
-export default function UserApplicationsPage() {
+  const applications = await getUserApplications(currentUser.id);
+
   return (
-    <div className="space-y-6">
-      <div className="rounded-4xl bg-white p-8 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.25)]">
+    <div className="space-y-8">
+      <div>
         <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
-          Recent applications
+          Applications
         </p>
-        <h2 className="mt-3 text-3xl font-semibold text-slate-950">
-          Track your progress
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          Review the latest status updates for your active applications.
+
+        <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+          My Applications
+        </h1>
+
+        <p className="mt-2 text-slate-500">
+          Track the progress of every job you've applied for.
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {applications.map((item) => (
-          <Card key={item.id} className="space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
-                  {item.company}
-                </p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">
-                  {item.role}
-                </h3>
+      {applications.length === 0 ? (
+        <Card className="py-16 text-center">
+          <h3 className="text-lg font-semibold text-slate-900">
+            No applications yet
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Once you apply for a job, it will appear here.
+          </p>
+        </Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {applications.map((application) => (
+            <Card key={application.applicationId} className="space-y-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    {application.companyName}
+                  </p>
+
+                  <h3 className="mt-1 text-xl font-semibold">
+                    {application.jobTitle}
+                  </h3>
+                </div>
+
+                <StatusBadge status={application.status} />
               </div>
-              <span className="rounded-3xl bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
-                {item.status}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm text-slate-500">
-              <p>Submitted</p>
-              <p>{item.submitted}</p>
-            </div>
-            <div className="flex gap-3">
-              <Button className="w-full">View details</Button>
-              <Button variant="secondary" className="w-full">
-                Withdraw
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+
+              <div className="grid grid-cols-2 gap-4 rounded-xl bg-slate-50 p-4">
+                <div>
+                  <p className="text-xs uppercase text-slate-500">Applied On</p>
+
+                  <p className="mt-1 font-medium">
+                    {new Date(application.appliedAt).toLocaleDateString()}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase text-slate-500">AI Score</p>
+
+                  <p className="mt-1 font-medium">
+                    {application.overallScore ?? "--"}
+                  </p>
+                </div>
+              </div>
+
+              {/* <Link
+                href={`/jobs/${application.jobId}`}
+                className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+              >
+                View Job
+              </Link> */}
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
