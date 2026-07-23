@@ -34,7 +34,7 @@ export default function LoginPage() {
         return;
       }
 
-      toast.success("Signed in successfully.");
+      //toast.success("Signed in successfully.");
       if (result?.user?.role === "ADMIN") {
         router.push("/dashboard");
       } else {

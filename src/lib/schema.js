@@ -75,7 +75,7 @@ export const jobs = pgTable("jobs", {
 
   status: jobStatusEnum("status").default("PUBLISHED").notNull(),
 
-  publishedAt: timestamp("published_at"),
+  publishedAt: timestamp("published_at").defaultNow().notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
