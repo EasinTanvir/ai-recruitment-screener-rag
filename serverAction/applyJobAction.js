@@ -97,12 +97,12 @@ export async function applyJobAction({ jobId, resumeUrl }) {
     // AI Evaluation
     // --------------------------------------------------
 
-    // const evaluation = await evaluateCandidate({
-    //   title: job.title,
-    //   description: job.description,
-    //   requirements: job.requirements,
-    //   resumeText,
-    // });
+    const evaluation = await evaluateCandidate({
+      title: job.title,
+      description: job.description,
+      requirements: job.requirements,
+      resumeText,
+    });
 
     // --------------------------------------------------
     // Save Everything

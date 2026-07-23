@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "AI Recruiter System",
+  title: "HireFlow - Recruiter System",
   description:
     "A premium recruiter dashboard and public job listing experience built with Next.js and Tailwind CSS.",
 };
