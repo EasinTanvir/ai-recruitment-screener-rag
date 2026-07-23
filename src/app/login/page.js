@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
@@ -13,6 +13,10 @@ import { loginAction } from "../../../serverAction/auth/loginAction";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const redirect = searchParams.get("redirect");
+
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -27,16 +31,23 @@ export default function LoginPage() {
 
   const onSubmit = async (data) => {
     setLoading(true);
+
     try {
       const result = await loginAction(data);
+
       if (result?.error) {
         toast.error(result.error);
         return;
       }
 
-      //toast.success("Signed in successfully.");
       if (result?.user?.role === "ADMIN") {
         router.push("/dashboard");
+        return;
+      }
+
+      // Redirect to the original page if provided
+      if (redirect) {
+        router.push(redirect);
       } else {
         router.push("/user");
       }
@@ -46,7 +57,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
   const fieldError = (message) => (
     <p className="mt-2 text-sm text-rose-600">{message}</p>
   );

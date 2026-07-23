@@ -16,7 +16,7 @@ export default function LogoutButton() {
     try {
       await logoutAction();
 
-      toast.success("Logged out successfully.");
+      //toast.success("Logged out successfully.");
       router.push("/login");
     } catch (error) {
       toast.error("Unable to log out. Please try again.");

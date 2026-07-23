@@ -6,7 +6,7 @@ import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 import { useEffect, useRef } from "react";
 
-const suggestions = ["React Developer?", "Frontend Developer?"];
+const suggestions = ["I am looking for a job"];
 
 export default function ChatWindow({
   open,
