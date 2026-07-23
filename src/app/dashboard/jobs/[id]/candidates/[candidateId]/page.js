@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { getApplicantById } from "../../../../../../../serverAction/queries/applications";
+import CandidateActions from "@/components/dashboard/CandidateActions";
 
 const scoreColor = (score) => {
   if (score >= 80)
@@ -98,10 +99,7 @@ const ViewCandidate = async ({ params }) => {
                   View Resume
                 </a>
 
-                <button className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-800">
-                  <RotateCcw className="h-4 w-4" />
-                  Re-evaluate
-                </button>
+                <CandidateActions application={application} />
               </div>
             </div>
           </div>
