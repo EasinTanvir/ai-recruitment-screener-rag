@@ -15,7 +15,7 @@ export default function AiChat() {
           id: crypto.randomUUID(),
           role: "assistant",
           content:
-            "Hi 👋 I'm your AI Recruiting Assistant. Ask me about jobs, candidates, or company policies.",
+            "Hi 👋 I'm your AI Recruiting Assistant. Tell me about the kind of job you're looking for, and I'll help you find the best matches.",
         },
       ];
     }
@@ -31,7 +31,7 @@ export default function AiChat() {
         id: crypto.randomUUID(),
         role: "assistant",
         content:
-          "Hi 👋 I'm your AI Recruiting Assistant. Ask me about jobs, candidates, or company policies.",
+          "Hi 👋 I'm your AI Recruiting Assistant. Tell me about the kind of job you're looking for, and I'll help you find the best matches.",
       },
     ];
   });

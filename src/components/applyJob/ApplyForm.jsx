@@ -6,9 +6,12 @@ import Button from "../shared/Button";
 import ResumeDropzone from "./ResumeDropzone";
 import { useEdgeStore } from "@/lib/edgestore";
 import { applyJobAction } from "../../../serverAction/applyJobAction";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function ApplyForm({ jobId, alreadyApplied }) {
   const { edgestore } = useEdgeStore();
+  const router = useRouter();
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,7 +33,10 @@ export default function ApplyForm({ jobId, alreadyApplied }) {
         resumeUrl: upload.url,
       });
 
-      console.log(result);
+      toast.success("Applied Successfully");
+      router.refresh();
+
+      //console.log(result);
     } catch (error) {
       console.error("Upload failed", error);
     } finally {
