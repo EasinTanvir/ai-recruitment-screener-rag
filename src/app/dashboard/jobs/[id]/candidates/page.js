@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Mail } from "lucide-react";
+
 import { getApplicantsByJobId } from "../../../../../../serverAction/queries/applications";
 import { getJobById } from "../../../../../../serverAction/queries/jobs";
 
@@ -20,9 +21,11 @@ function scoreColor(score) {
   return "text-red-500";
 }
 
-const CandidatesPage = async ({ params }) => {
+export default async function CandidatesPage({ params }) {
   const { id } = await params;
+
   const job = await getJobById(id);
+
   if (!job) notFound();
 
   const applicants = await getApplicantsByJobId(id);
@@ -37,11 +40,13 @@ const CandidatesPage = async ({ params }) => {
           <ArrowLeft className="h-4 w-4" />
           Back to Job
         </Link>
+
         <h1 className="text-2xl font-semibold">Candidates for {job.title}</h1>
+
         <p className="mt-1 text-slate-500">{applicants.length} applicant(s)</p>
       </div>
 
-      <div className="rounded-xl border border-slate-200">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
             <tr>
@@ -50,14 +55,14 @@ const CandidatesPage = async ({ params }) => {
               <th className="px-5 py-3 font-medium">Score</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Applied</th>
-              <th className="px-5 py-3">Action</th>
             </tr>
           </thead>
+
           <tbody>
             {applicants.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={5}
                   className="px-5 py-8 text-center text-slate-400"
                 >
                   No applicants yet.
@@ -65,57 +70,78 @@ const CandidatesPage = async ({ params }) => {
               </tr>
             )}
 
-            {applicants.map((applicant) => (
-              <tr
-                key={applicant.id}
-                className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
-              >
-                <td className="px-5 py-4 font-medium text-slate-900">
-                  {applicant.firstName || applicant.lastName
-                    ? `${applicant.firstName ?? ""} ${applicant.lastName ?? ""}`.trim()
-                    : "Unknown"}
-                </td>
-                <td className="px-5 py-4 text-slate-500">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Mail className="h-3.5 w-3.5" />
-                    {applicant.email ?? "—"}
-                  </span>
-                </td>
-                <td
-                  className={`px-5 py-4 font-semibold ${scoreColor(applicant.overallScore)}`}
-                >
-                  {applicant.overallScore != null
-                    ? `${applicant.overallScore}%`
-                    : "—"}
-                </td>
-                <td className="px-5 py-4">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                      STATUS_STYLES[applicant.status] ??
-                      "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    {applicant.status.replace("_", " ")}
-                  </span>
-                </td>
-                <td className="px-5 py-4 text-slate-500">
-                  {new Date(applicant.createdAt).toLocaleDateString()}
-                </td>
+            {applicants.map((applicant, index) => {
+              const href = `/dashboard/jobs/${id}/candidates/${applicant.id}`;
 
-                <td>
-                  <Link
-                    href={`/dashboard/jobs/${id}/candidates/${applicant.id}`}
-                  >
-                    View
-                  </Link>
-                </td>
-              </tr>
-            ))}
+              return (
+                <tr
+                  key={applicant.id}
+                  className={`group transition ${
+                    index % 2 === 0 ? "bg-white" : "bg-slate-50"
+                  } hover:bg-slate-100`}
+                >
+                  <td className="p-0">
+                    <Link href={href} className="block px-5 py-4">
+                      <p className="font-medium text-slate-900">
+                        {applicant.firstName || applicant.lastName
+                          ? `${applicant.firstName ?? ""} ${
+                              applicant.lastName ?? ""
+                            }`.trim()
+                          : "Unknown"}
+                      </p>
+                    </Link>
+                  </td>
+
+                  <td className="p-0">
+                    <Link
+                      href={href}
+                      className="flex items-center gap-2 px-5 py-4 text-slate-500"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      {applicant.email ?? "—"}
+                    </Link>
+                  </td>
+
+                  <td className="p-0">
+                    <Link
+                      href={href}
+                      className={`block px-5 py-4 font-semibold ${scoreColor(
+                        applicant.overallScore,
+                      )}`}
+                    >
+                      {applicant.overallScore != null
+                        ? `${applicant.overallScore}%`
+                        : "—"}
+                    </Link>
+                  </td>
+
+                  <td className="p-0">
+                    <Link href={href} className="block px-5 py-4">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          STATUS_STYLES[applicant.status] ??
+                          "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {applicant.status.replaceAll("_", " ")}
+                      </span>
+                    </Link>
+                  </td>
+
+                  <td className="p-0">
+                    <Link
+                      href={href}
+                      className="block px-5 py-4 text-slate-500"
+                    >
+                      {new Date(applicant.createdAt).toLocaleDateString()}
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
-
-export default CandidatesPage;
+}
