@@ -7,7 +7,7 @@ import { Home, Briefcase, FileText, Users, Mail, Settings } from "lucide-react";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/dashboard/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/dashboard/applications", label: "Applications", icon: FileText },
+  { href: "/dashboard/candidates", label: "Candidates", icon: FileText },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
