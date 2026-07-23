@@ -177,7 +177,7 @@ async function seedJobs() {
     },
   ].map((job) => ({
     ...job,
-    createdBy: 2,
+    createdBy: 4,
     status: "PUBLISHED",
     publishedAt: new Date(),
   }));

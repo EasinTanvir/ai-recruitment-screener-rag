@@ -64,7 +64,7 @@ export default function AiChat() {
         },
 
         body: JSON.stringify({
-          message,
+          messages: [...messages, userMessage],
         }),
       });
 
