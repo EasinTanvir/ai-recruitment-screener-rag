@@ -51,20 +51,7 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-slate-100 px-6 py-12 lg:px-10">
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-10 rounded-4xl bg-white p-10 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.25)]">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
-            Candidate registration
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950">
-            Create your account
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-            Sign up to save jobs, track applications, and personalize your
-            candidate profile.
-          </p>
-        </div>
-
+      <div className="mx-auto max-w-xl">
         <Card className="space-y-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>

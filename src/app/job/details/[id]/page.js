@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { getJobById } from "../../../../../serverAction/queries/jobs";
 import ApplyForm from "@/components/applyJob/ApplyForm";
+import { getCurrentUser } from "@/lib/auth";
 
 function Section({ title, children }) {
   return (
@@ -22,6 +23,9 @@ export default async function JobDetailsPage({ params }) {
   const { id } = await params;
 
   const job = await getJobById(id);
+  const user = await getCurrentUser();
+
+  const isAuthenticated = !!user;
 
   if (!job) {
     notFound();
@@ -96,7 +100,26 @@ export default async function JobDetailsPage({ params }) {
               </div>
             </div>
 
-            <ApplyForm jobId={job.id} alreadyApplied={job.alreadyApplied} />
+            {isAuthenticated ? (
+              <ApplyForm jobId={job.id} alreadyApplied={job.alreadyApplied} />
+            ) : (
+              <div className="mt-6 rounded-2xl border border-slate-200  p-6 text-center">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Login to Apply
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  You need to sign in to submit your application for this job.
+                </p>
+
+                <Link
+                  href={`/login?redirect=/job/details/${job.id}`}
+                  className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+                >
+                  Login to Apply
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
