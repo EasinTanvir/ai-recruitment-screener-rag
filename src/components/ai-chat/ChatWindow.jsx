@@ -142,11 +142,6 @@ export default function ChatWindow({
                 <SendHorizonal size={18} />
               </button>
             </div>
-
-            <p className="mt-2 text-center text-[11px] text-slate-400">
-              Press <span className="font-medium">Enter</span> to send •{" "}
-              <span className="font-medium">Shift + Enter</span> for a new line
-            </p>
           </form>
         </motion.div>
       )}
