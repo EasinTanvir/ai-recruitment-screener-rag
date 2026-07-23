@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { jobs } from "@/lib/schema";
 import { revalidatePath } from "next/cache";
 import { authorize } from "@/lib/authorization";
-
+import llm from "@/lib/langchain";
 export async function createJobAction(data) {
   try {
     const auth = await authorize("ADMIN");

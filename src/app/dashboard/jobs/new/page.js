@@ -11,16 +11,31 @@ import Input from "@/components/shared/Input";
 import Textarea from "@/components/shared/Textarea";
 
 import { Zap } from "lucide-react";
+//
 import { createJobAction } from "../../../../../serverAction/createJobAction";
+import AiGenerateModal from "@/components/shared/AiGenerateModal";
+import { generateContentAction } from "../../../../../serverAction/generateContentAction";
 
 export default function CreateJobPage() {
-  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  const [modalPrompt, setModalPrompt] = useState("");
+  const [generatedText, setGeneratedText] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const [aiModal, setAiModal] = useState({
+    open: false,
+    type: "description",
+  });
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm({
@@ -45,6 +60,26 @@ export default function CreateJobPage() {
       router.push("/dashboard/jobs");
     } else {
       console.log("errors", res.message);
+      toast.error(res.message);
+    }
+
+    setLoading(false);
+  };
+
+  const generateContent = async () => {
+    setLoading(true);
+
+    const res = await generateContentAction({
+      type: aiModal.type,
+      title: watch("title"),
+      companyName: watch("companyName"),
+      description: watch("description"),
+      prompt: modalPrompt,
+    });
+
+    if (res.success) {
+      setGeneratedText(res.message);
+    } else {
       toast.error(res.message);
     }
 
@@ -110,11 +145,18 @@ export default function CreateJobPage() {
             />
 
             {errors.description && fieldError(errors.description.message)}
-
             <Button
-              variant="ghost"
               type="button"
-              className="absolute right-2 top-10"
+              variant="ghost"
+              onClick={() => {
+                setModalPrompt(watch("description"));
+                setGeneratedText("");
+
+                setAiModal({
+                  open: true,
+                  type: "description",
+                });
+              }}
             >
               <Zap size={18} />
             </Button>
@@ -135,9 +177,17 @@ export default function CreateJobPage() {
             {errors.requirements && fieldError(errors.requirements.message)}
 
             <Button
-              variant="ghost"
               type="button"
-              className="absolute right-2 top-10"
+              variant="ghost"
+              onClick={() => {
+                setModalPrompt(watch("requirements"));
+                setGeneratedText("");
+
+                setAiModal({
+                  open: true,
+                  type: "requirements",
+                });
+              }}
             >
               <Zap size={18} />
             </Button>
@@ -154,6 +204,28 @@ export default function CreateJobPage() {
           </div>
         </form>
       </Card>
+      <AiGenerateModal
+        open={aiModal.open}
+        type={aiModal.type}
+        prompt={modalPrompt}
+        generatedText={generatedText}
+        loading={loading}
+        onPromptChange={setModalPrompt}
+        onGenerate={generateContent}
+        onClose={() => setAiModal({ open: false, type: "" })}
+        onInsert={(text) => {
+          if (aiModal.type === "description") {
+            setValue("description", text);
+          } else {
+            setValue("requirements", text);
+          }
+
+          setAiModal({
+            open: false,
+            type: "",
+          });
+        }}
+      />
     </div>
   );
 }
