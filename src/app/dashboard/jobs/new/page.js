@@ -146,6 +146,7 @@ export default function CreateJobPage() {
 
             {errors.description && fieldError(errors.description.message)}
             <Button
+              className="absolute top-8 right-0"
               type="button"
               variant="ghost"
               onClick={() => {
@@ -177,6 +178,7 @@ export default function CreateJobPage() {
             {errors.requirements && fieldError(errors.requirements.message)}
 
             <Button
+              className="absolute top-8 right-0"
               type="button"
               variant="ghost"
               onClick={() => {
