@@ -5,14 +5,42 @@ import toast from "react-hot-toast";
 import { RotateCcw } from "lucide-react";
 
 import ScheduleMeetingModal from "../shared/ScheduleMeetingModal";
+
+import { generateInterviewInvitationAction } from "../../../serverAction/generateInterviewInvitationAction";
 import { scheduleMeetingAction } from "../../../serverAction/scheduleMeetingAction";
 
 export default function CandidateActions({ application }) {
   const [open, setOpen] = useState(false);
 
+  const [message, setMessage] = useState("");
+
   const [loading, setLoading] = useState(false);
 
-  async function handleSend(message) {
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function handleGenerateAi() {
+    setAiLoading(true);
+
+    try {
+      const result = await generateInterviewInvitationAction({
+        candidateName: `${application.firstName} ${application.lastName}`,
+        jobTitle: application.jobTitle,
+        additionalInstructions: message,
+      });
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      setMessage(result.data);
+      toast.success("Invitation generated.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  async function handleSend() {
     setLoading(true);
 
     try {
@@ -29,6 +57,8 @@ export default function CandidateActions({ application }) {
       toast.success(result.message);
 
       setOpen(false);
+
+      setMessage("");
     } finally {
       setLoading(false);
     }
@@ -46,9 +76,13 @@ export default function CandidateActions({ application }) {
 
       <ScheduleMeetingModal
         open={open}
-        loading={loading}
         onClose={() => setOpen(false)}
+        message={message}
+        setMessage={setMessage}
+        onGenerateAi={handleGenerateAi}
         onSend={handleSend}
+        loading={loading}
+        aiLoading={aiLoading}
       />
     </>
   );

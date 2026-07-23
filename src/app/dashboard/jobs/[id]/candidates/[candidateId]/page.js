@@ -99,7 +99,11 @@ const ViewCandidate = async ({ params }) => {
                   View Resume
                 </a>
 
-                <CandidateActions application={application} />
+                <CandidateActions
+                  application={application}
+                  jobId={id}
+                  candidateId={candidateId}
+                />
               </div>
             </div>
           </div>

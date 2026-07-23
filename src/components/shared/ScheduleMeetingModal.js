@@ -2,30 +2,23 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import Button from "./Button";
 
 export default function ScheduleMeetingModal({
   open,
   onClose,
+  message,
+  setMessage,
+  onGenerateAi,
   onSend,
   loading,
+  aiLoading,
 }) {
-  const [message, setMessage] = useState("");
-
   if (!open) return null;
-
-  const handleSend = () => {
-    if (!message.trim()) return;
-
-    onSend(message);
-
-    setMessage("");
-  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl">
-        {/* Header */}
-
         <div className="flex items-center justify-between border-b px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold">
@@ -33,7 +26,7 @@ export default function ScheduleMeetingModal({
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Write a message that will be included in the invitation email.
+              Write a custom message or let AI generate one.
             </p>
           </div>
 
@@ -45,21 +38,15 @@ export default function ScheduleMeetingModal({
           </button>
         </div>
 
-        {/* Body */}
-
         <div className="space-y-4 p-6">
           <textarea
             rows={8}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Hi John,
-
-We were impressed with your application and would like to invite you to an interview..."
+            placeholder="Optional: Add anything you'd like AI to include..."
             className="w-full resize-none rounded-xl border p-4 text-sm outline-none focus:border-slate-900"
           />
         </div>
-
-        {/* Footer */}
 
         <div className="flex justify-end gap-3 border-t px-6 py-4">
           <button
@@ -69,8 +56,17 @@ We were impressed with your application and would like to invite you to an inter
             Cancel
           </button>
 
+          <Button
+            variant="outline"
+            loading={aiLoading}
+            disabled={aiLoading}
+            onClick={onGenerateAi}
+          >
+            ✨ Write with AI
+          </Button>
+
           <button
-            onClick={handleSend}
+            onClick={onSend}
             disabled={loading || !message.trim()}
             className="rounded-lg bg-slate-900 px-5 py-2 text-sm text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
