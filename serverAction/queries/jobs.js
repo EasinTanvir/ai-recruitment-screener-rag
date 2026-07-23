@@ -9,15 +9,39 @@ export async function getJobs(page = 1, limit = 6) {
 
   const [items, [{ total }]] = await Promise.all([
     db
-      .select()
+      .select({
+        id: jobs.id,
+        title: jobs.title,
+        companyName: jobs.companyName,
+        description: jobs.description,
+        requirements: jobs.requirements,
+        status: jobs.status,
+        publishedAt: jobs.publishedAt,
+        createdAt: jobs.createdAt,
+        updatedAt: jobs.updatedAt,
+
+        applicantCount: sql`COUNT(${applications.id})`.mapWith(Number),
+      })
       .from(jobs)
+      .leftJoin(applications, eq(applications.jobId, jobs.id))
+      .groupBy(
+        jobs.id,
+        jobs.title,
+        jobs.companyName,
+        jobs.description,
+        jobs.requirements,
+        jobs.status,
+        jobs.publishedAt,
+        jobs.createdAt,
+        jobs.updatedAt,
+      )
       .orderBy(desc(jobs.createdAt))
       .limit(limit)
       .offset(offset),
 
     db
       .select({
-        total: sql`count(*)`.mapWith(Number),
+        total: sql`COUNT(*)`.mapWith(Number),
       })
       .from(jobs),
   ]);
@@ -29,6 +53,7 @@ export async function getJobs(page = 1, limit = 6) {
     currentPage: page,
   };
 }
+
 export async function getJobById(id) {
   const jobId = Number(id);
 
