@@ -2,6 +2,7 @@ import { ChatGroq } from "@langchain/groq";
 import { createAgent } from "langchain";
 
 import { tools } from "./tools";
+import { SYSTEM_PROMPT } from "./prompts/system";
 
 const model = new ChatGroq({
   model: "llama-3.3-70b-versatile",
@@ -14,4 +15,5 @@ const model = new ChatGroq({
 export const agent = createAgent({
   model,
   tools,
+  systemPrompt: SYSTEM_PROMPT,
 });
