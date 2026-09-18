@@ -169,7 +169,7 @@ const checkpointer = new MemorySaver();
 export const jobAssistantGraph = graph.compile({ checkpointer });
 ```
 
-- Every request must carry a stable `thread_id` (e.g. the chat session id already used by `<AiChat />`, or generate one client-side and persist it in local state/cookies for the conversation's lifetime).
+- Every request must carry a stable `thread_id` (e.g. the chat session id already used by `<AiChat />` if not sent from frontend, or generate one client-side and persist it in local state/cookies for the conversation's lifetime).
 - Document clearly in code comments that `MemorySaver` is **process-memory only** — state is lost on server restart/redeploy and does not work across multiple server instances. Leave a TODO comment pointing to swapping in `@langchain/langgraph-checkpoint-postgres` or `-sqlite` later; do not implement that now.
 
 ### Fault tolerance rules
@@ -273,6 +273,7 @@ Goal: Migrate the chat assistant from a single-tool LangChain agent to a LangGra
 StateGraph that supports conditional routing, a parallel CV-parse + job-search step,
 and multiple human-in-the-loop (HITL) confirmation points, using in-memory persistence
 via MemorySaver keyed by a per-conversation thread_id.
+allow user to upload file from the AiChat component
 
 Follow the attached update-chat.md exactly:
 - Build the state schema in lib/agent/state.js as specified.
