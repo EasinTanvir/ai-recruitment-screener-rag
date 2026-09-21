@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bot, SendHorizonal } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
+import ResumeUploadButton from "./ResumeUploadButton";
 import { useEffect, useRef } from "react";
 
 const suggestions = ["I am looking for a job", "Backend developer"];
@@ -15,6 +16,8 @@ export default function ChatWindow({
   input,
   setInput,
   onSend,
+  onUploadCv,
+  canUploadCv,
 }) {
   const messagesRef = useRef(null);
   const bottomRef = useRef(null);
@@ -78,7 +81,12 @@ export default function ChatWindow({
             className="flex-1 space-y-4 overflow-y-auto p-5"
           >
             {messages.map((message) => (
-              <ChatMessage key={message.id} {...message} />
+              <ChatMessage
+                key={message.id}
+                {...message}
+                onSend={onSend}
+                loading={loading}
+              />
             ))}
 
             {loading && <TypingIndicator />}
@@ -113,7 +121,12 @@ export default function ChatWindow({
             }}
             className="border-t bg-white p-4"
           >
-            <div className="flex items-end gap-3 rounded-2xl border bg-white px-3 py-2 shadow-sm transition focus-within:border-blue-500">
+            <div className="flex items-end gap-2 rounded-2xl border bg-white px-3 py-2 shadow-sm transition focus-within:border-blue-500">
+              <ResumeUploadButton
+                disabled={!canUploadCv || loading}
+                onSelect={onUploadCv}
+              />
+
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -137,7 +150,7 @@ export default function ChatWindow({
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <SendHorizonal size={18} />
               </button>
