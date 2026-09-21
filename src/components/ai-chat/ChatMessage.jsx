@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkDirective from "remark-directive";
+import { visit } from "unist-util-visit";
 import { motion } from "framer-motion";
 import {
   BriefcaseBusiness,
@@ -13,70 +17,190 @@ import {
   X,
 } from "lucide-react";
 
-function InlineText({ text }) {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
-    part.startsWith("**") && part.endsWith("**") ? (
-      <strong key={index} className="font-semibold text-slate-950">
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      <span key={index}>{part}</span>
-    ),
-  );
+// ---------------------------------------------------------------------------
+// Turns remark-directive nodes (:warn[...], ::: warn ... :::) into elements
+// react-markdown's `components` map can target by name. Inline directives
+// (:name[...]) keep their name as-is; block/container directives (:::name)
+// get a "-block" suffix so we can render them differently (a full callout
+// box vs an inline colored span).
+// ---------------------------------------------------------------------------
+function remarkDirectiveToHast() {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (
+        node.type === "textDirective" ||
+        node.type === "leafDirective" ||
+        node.type === "containerDirective"
+      ) {
+        const data = node.data || (node.data = {});
+        const isBlock = node.type === "containerDirective";
+        data.hName = isBlock ? `${node.name}-block` : node.name;
+        data.hProperties = node.attributes || {};
+      }
+    });
+  };
 }
 
+// Inline semantic markers — agent writes :warn[log in first], etc.
+const directiveComponents = {
+  danger: ({ node, ...props }) => (
+    <strong className="font-bold text-red-600" {...props} />
+  ),
+  warn: ({ node, ...props }) => (
+    <strong className="font-bold text-amber-600" {...props} />
+  ),
+  success: ({ node, ...props }) => (
+    <strong className="font-bold text-emerald-600" {...props} />
+  ),
+  info: ({ node, ...props }) => (
+    <strong className="font-bold text-blue-600" {...props} />
+  ),
+  highlight: ({ node, ...props }) => (
+    <mark
+      className="rounded bg-yellow-100 px-1 font-semibold text-slate-900"
+      {...props}
+    />
+  ),
+  // Block versions — agent writes:
+  // :::warn
+  // Please log in before uploading your CV.
+  // :::
+  "danger-block": ({ node, ...props }) => (
+    <div
+      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800 [&_p]:m-0"
+      {...props}
+    />
+  ),
+  "warn-block": ({ node, ...props }) => (
+    <div
+      className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800 [&_p]:m-0"
+      {...props}
+    />
+  ),
+  "success-block": ({ node, ...props }) => (
+    <div
+      className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 [&_p]:m-0"
+      {...props}
+    />
+  ),
+  "info-block": ({ node, ...props }) => (
+    <div
+      className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800 [&_p]:m-0"
+      {...props}
+    />
+  ),
+};
+
+// ---------------------------------------------------------------------------
+// Markdown -> styled JSX mapping. This is where headings get color, bold
+// gets weight/color, bullets get custom markers, code gets a mono block, etc.
+// Tweak classNames here to change the whole app's chat look in one place.
+// ---------------------------------------------------------------------------
+const markdownComponents = {
+  h1: ({ node, ...props }) => (
+    <h1 className="mt-2 mb-1 text-lg font-bold text-blue-700" {...props} />
+  ),
+  h2: ({ node, ...props }) => (
+    <h2 className="mt-2 mb-1 text-base font-bold text-blue-700" {...props} />
+  ),
+  h3: ({ node, ...props }) => (
+    <h3
+      className="mt-2 mb-1 text-sm font-bold uppercase tracking-wide text-blue-600"
+      {...props}
+    />
+  ),
+  p: ({ node, ...props }) => (
+    <p className="mb-2 text-sm leading-6 text-slate-700 last:mb-0" {...props} />
+  ),
+  strong: ({ node, ...props }) => (
+    <strong className="font-semibold text-slate-900" {...props} />
+  ),
+  em: ({ node, ...props }) => (
+    <em className="italic text-slate-600" {...props} />
+  ),
+  ul: ({ node, ...props }) => (
+    <ul
+      className="mb-2 ml-1 list-none space-y-1.5 text-sm text-slate-700 last:mb-0"
+      {...props}
+    />
+  ),
+  ol: ({ node, ...props }) => (
+    <ol
+      className="mb-2 ml-4 list-decimal space-y-1.5 text-sm text-slate-700 marker:font-semibold marker:text-blue-600 last:mb-0"
+      {...props}
+    />
+  ),
+  li: ({ node, ordered, ...props }) =>
+    ordered ? (
+      <li className="pl-1" {...props} />
+    ) : (
+      <li className="flex gap-2">
+        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+        <span className="flex-1" {...props} />
+      </li>
+    ),
+  a: ({ node, ...props }) => (
+    <a
+      {...props}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-medium text-blue-600 underline underline-offset-2 hover:text-blue-700"
+    />
+  ),
+  code: ({ node, inline, className, children, ...props }) =>
+    inline ? (
+      <code
+        className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[13px] text-rose-600"
+        {...props}
+      >
+        {children}
+      </code>
+    ) : (
+      <pre className="mb-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-[13px] text-slate-100">
+        <code className="font-mono" {...props}>
+          {children}
+        </code>
+      </pre>
+    ),
+  blockquote: ({ node, ...props }) => (
+    <blockquote
+      className="mb-2 border-l-2 border-blue-300 pl-3 text-sm italic text-slate-500 last:mb-0"
+      {...props}
+    />
+  ),
+  hr: () => <hr className="my-3 border-slate-200" />,
+  table: ({ node, ...props }) => (
+    <div className="mb-2 overflow-x-auto rounded-lg border border-slate-200">
+      <table className="w-full text-left text-xs" {...props} />
+    </div>
+  ),
+  thead: ({ node, ...props }) => <thead className="bg-slate-50" {...props} />,
+  th: ({ node, ...props }) => (
+    <th
+      className="border-b border-slate-200 px-2.5 py-1.5 font-semibold text-slate-600"
+      {...props}
+    />
+  ),
+  td: ({ node, ...props }) => (
+    <td
+      className="border-b border-slate-100 px-2.5 py-1.5 text-slate-700"
+      {...props}
+    />
+  ),
+};
+
 function AssistantContent({ content }) {
-  const lines = content.split("\n");
-
+  // No more manual splitting/regex — remark-directive handles both inline
+  // (:warn[...]) and block (:::warn ... :::) semantic markers the agent
+  // chooses to emit, on top of normal markdown.
   return (
-    <div className="space-y-2 text-sm leading-6">
-      {lines.map((line, index) => {
-        const trimmed = line.trim();
-        if (!trimmed) return <div key={`space-${index}`} className="h-1" />;
-
-        const isUploadPrompt = /upload (your |a )?cv|upload (your |a )?resume/i.test(trimmed);
-        const isLoginPrompt = /log in|sign in/i.test(trimmed);
-        const isSuccess = /application submitted|successfully applied/i.test(trimmed);
-        const isHeading = /^#{1,3}\s+/.test(trimmed);
-        const listMatch = trimmed.match(/^(?:[-*]|\d+[.)])\s+(.+)/);
-
-        if (isUploadPrompt || isLoginPrompt || isSuccess) {
-          const tone = isUploadPrompt
-            ? "border-rose-200 bg-rose-50 text-rose-800"
-            : isLoginPrompt
-              ? "border-amber-200 bg-amber-50 text-amber-800"
-              : "border-emerald-200 bg-emerald-50 text-emerald-800";
-
-          return (
-            <div key={index} className={`rounded-lg border px-3 py-2 font-semibold ${tone}`}>
-              <InlineText text={trimmed.replace(/^#{1,3}\s+/, "")} />
-            </div>
-          );
-        }
-
-        if (isHeading) {
-          return (
-            <h3 key={index} className="pt-1 text-base font-bold text-blue-700">
-              <InlineText text={trimmed.replace(/^#{1,3}\s+/, "")} />
-            </h3>
-          );
-        }
-
-        if (listMatch) {
-          return (
-            <div key={index} className="flex gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-slate-700">
-              <span className="font-bold text-blue-600">•</span>
-              <span><InlineText text={listMatch[1]} /></span>
-            </div>
-          );
-        }
-
-        return (
-          <p key={index}>
-            <InlineText text={trimmed} />
-          </p>
-        );
-      })}
+    <div className="text-sm">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkDirective, remarkDirectiveToHast]}
+        components={{ ...markdownComponents, ...directiveComponents }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

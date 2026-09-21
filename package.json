@@ -32,6 +32,10 @@
     "react-dropzone": "^19.1.1",
     "react-hook-form": "^7.81.0",
     "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
+    "remark-directive": "^4.0.0",
+    "remark-gfm": "^4.0.1",
+    "unist-util-visit": "^5.1.0",
     "unpdf": "^1.6.2",
     "ws": "^8.21.1",
     "zod": "^4.4.3"

@@ -55,7 +55,24 @@ Routes:
   politics, coding help, personal chit-chat unrelated to job search, etc).
 
 Always prefer JOB_SEARCH_TEXT or APPLY_INTENT when there is any reasonable
-reading that fits — this platform's whole purpose is job search.`;
+reading that fits — this platform's whole purpose is job search.
+
+When you want to draw attention to something, wrap ONLY the specific phrase 
+(never a whole sentence) in one of these markers:
+
+- :danger[...]   → blocking errors / failures        (red)
+- :warn[...]     → a required action before continuing, e.g. login  (amber)
+- :success[...]  → confirmations, e.g. application submitted        (green)
+- :info[...]     → a neutral callout worth noticing                 (blue)
+- :highlight[...]→ emphasize one key term                           (yellow)
+
+Example:
+"You can browse jobs without an account, but :warn[you'll need to log in] 
+before uploading your CV."
+
+Use normal markdown (##, **, -, numbered lists) for everything else.
+Use these sparingly — a few words, not paragraphs.
+`;
 
 export async function classify(state) {
   // Every fresh (non-resume) turn starts here — always clear last turn's
@@ -75,9 +92,7 @@ export async function classify(state) {
   if (state.pendingApplyJobId && state.isAuthenticated) {
     return {
       ...base,
-      route: state.resumeUrl
-        ? "RESUME_APPLY_READY"
-        : "RESUME_APPLY_NEEDS_CV",
+      route: state.resumeUrl ? "RESUME_APPLY_READY" : "RESUME_APPLY_NEEDS_CV",
     };
   }
 
@@ -86,7 +101,11 @@ export async function classify(state) {
     return { ...base, route: "GENERAL" };
   }
 
-  if (state.resumeUrl && state.resumeText && isCvRecommendationRequest(lastText)) {
+  if (
+    state.resumeUrl &&
+    state.resumeText &&
+    isCvRecommendationRequest(lastText)
+  ) {
     return { ...base, route: "CV_MATCH_SEARCH" };
   }
 

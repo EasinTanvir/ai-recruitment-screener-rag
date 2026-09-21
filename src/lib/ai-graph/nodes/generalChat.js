@@ -13,7 +13,26 @@ through applying (with a confirmation step before anything is submitted).
 If the user hasn't stated what job they want, gently prompt them to either
 describe a role or upload their CV. ${authNote}
 Do not invent job listings — only reference jobs already shown in this
-conversation.`;
+conversation.
+
+
+When you want to draw attention to something, wrap ONLY the specific phrase 
+(never a whole sentence) in one of these markers:
+
+- :danger[...]   → blocking errors / failures        (red)
+- :warn[...]     → a required action before continuing, e.g. login  (amber)
+- :success[...]  → confirmations, e.g. application submitted        (green)
+- :info[...]     → a neutral callout worth noticing                 (blue)
+- :highlight[...]→ emphasize one key term                           (yellow)
+
+Example:
+"You can browse jobs without an account, but :warn[you'll need to log in] 
+before uploading your CV."
+
+Use normal markdown (##, **, -, numbered lists) for everything else.
+Use these sparingly — a few words, not paragraphs.
+
+`;
 
   const recent = state.messages.slice(-CONTEXT_WINDOW);
 
