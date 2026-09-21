@@ -4,11 +4,26 @@ import { recruitingGraph } from "@/lib/ai-graph/graph";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function POST(req) {
-  const body = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json(
+      { error: "A JSON request body is required." },
+      { status: 400 },
+    );
+  }
   const { threadId, message, resumeUrl, resume } = body;
 
   if (!threadId) {
     return Response.json({ error: "threadId is required" }, { status: 400 });
+  }
+
+  if (resumeUrl !== undefined && (typeof resumeUrl !== "string" || !resumeUrl)) {
+    return Response.json(
+      { error: "resumeUrl must be a non-empty URL string" },
+      { status: 400 },
+    );
   }
 
   const user = await getCurrentUser(); // reads auth_token cookie server-side
@@ -19,7 +34,16 @@ export async function POST(req) {
 
   if (isResume) {
     // Resuming a paused (interrupted) graph — e.g. user tapped Confirm/Cancel
-    result = await recruitingGraph.invoke(new Command({ resume }), config);
+    result = await recruitingGraph.invoke(
+      new Command({
+        resume,
+        update: {
+          isAuthenticated: !!user,
+          userId: user?.id ?? null,
+        },
+      }),
+      config,
+    );
   } else {
     result = await recruitingGraph.invoke(
       {

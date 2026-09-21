@@ -62,7 +62,13 @@ export default function AiChat({ isLoggedIn = false }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ threadId, ...payload }),
     });
-    return response.json();
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || "The chat request failed.");
+    }
+
+    return data;
   }
 
   function pushAssistantMessage(data) {
@@ -102,13 +108,14 @@ export default function AiChat({ isLoggedIn = false }) {
         : await callChatApi({ message });
 
       pushAssistantMessage(data);
-    } catch {
+    } catch (error) {
+      console.error("Chat request failed:", error);
       setMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "Something went wrong.",
+          content: error.message || "Something went wrong.",
         },
       ]);
     } finally {
@@ -136,7 +143,7 @@ export default function AiChat({ isLoggedIn = false }) {
       pushAssistantMessage(data);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to upload CV.");
+      toast.error(err.message || "Failed to upload CV.");
     } finally {
       setUploading(false);
       setLoading(false);
