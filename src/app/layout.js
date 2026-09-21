@@ -38,9 +38,11 @@ export default async function RootLayout({ children }) {
       <body className="min-h-full bg-slate-100 text-slate-950">
         <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
         <main>
-          <AiChat />
-          <Toaster position="top-center" />
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          <EdgeStoreProvider>
+            <AiChat isLoggedIn={isAuthenticated} />
+            <Toaster position="top-center" />
+            {children}
+          </EdgeStoreProvider>
         </main>
         <Footer />
       </body>
