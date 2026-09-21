@@ -60,6 +60,7 @@ export async function buildConfirmation(state) {
     applicant,
     matchScore: match.score,
     matchReason: match.reason,
+    message: "Here's what I'll submit for this application — confirm to send it, or cancel.",
     question: `This is what I'll submit for **${job.title}** at ${job.companyName} — name: ${applicant.firstName ?? "?"} ${applicant.lastName ?? ""}, email: ${applicant.email ?? "?"}, estimated match: ${match.score}%. Reply "confirm" to submit or "cancel" to stop.`,
   });
 

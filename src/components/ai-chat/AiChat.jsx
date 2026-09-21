@@ -3,19 +3,25 @@
 import { useEffect, useState } from "react";
 import ChatButton from "./ChatButton";
 import ChatWindow from "./ChatWindow";
-
-import toast from "react-hot-toast";
 import { useEdgeStore } from "@/lib/edgestore";
+import toast from "react-hot-toast";
 
 const STORAGE_KEY = "ats-ai-chat";
 const THREAD_KEY = "ats-ai-chat-thread";
 
-const WELCOME = {
-  id: "welcome",
-  role: "assistant",
-  content:
-    "Hi 👋 I'm your AI Recruiting Assistant. Tell me about the kind of job you're looking for, or upload your CV and I'll match you to open roles.",
-};
+const WELCOME_LOGGED_IN =
+  "Hi there! 👋 How can I help you today — are you looking for a specific role, or would you like to upload your CV so I can match you with open positions?";
+
+const WELCOME_LOGGED_OUT =
+  "Hi there! 👋 How can I help you today — are you looking for a specific role? (Log in if you'd like to upload your CV so I can match you with open positions.)";
+
+function buildWelcome(isLoggedIn) {
+  return {
+    id: "welcome",
+    role: "assistant",
+    content: isLoggedIn ? WELCOME_LOGGED_IN : WELCOME_LOGGED_OUT,
+  };
+}
 
 /**
  * @param {boolean} isLoggedIn - pass this from a server component / auth
@@ -26,9 +32,9 @@ export default function AiChat({ isLoggedIn = false }) {
   const [open, setOpen] = useState(false);
 
   const [messages, setMessages] = useState(() => {
-    if (typeof window === "undefined") return [WELCOME];
+    if (typeof window === "undefined") return [buildWelcome(isLoggedIn)];
     const saved = sessionStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [WELCOME];
+    return saved ? JSON.parse(saved) : [buildWelcome(isLoggedIn)];
   });
 
   // one thread id per browser tab session; this is what lets the langgraph
@@ -60,14 +66,19 @@ export default function AiChat({ isLoggedIn = false }) {
   }
 
   function pushAssistantMessage(data) {
+    const toolResult =
+      data.toolResult ??
+      (data.interrupt
+        ? { type: "apply_confirmation", ...data.interrupt }
+        : null);
+
     setMessages((prev) => [
       ...prev,
       {
         id: crypto.randomUUID(),
         role: "assistant",
         content: data.message,
-        toolResult: data.toolResult ?? null,
-        interrupt: data.interrupt ?? null,
+        toolResult,
       },
     ]);
     setPendingInterrupt(data.interrupt ?? null);

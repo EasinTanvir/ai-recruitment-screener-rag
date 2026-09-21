@@ -52,7 +52,7 @@ export async function POST(req) {
   }
 
   const messages = pendingInterrupt
-    ? pendingInterrupt.question
+    ? pendingInterrupt.message
     : (aiMessage?.content ?? "");
 
   return Response.json({

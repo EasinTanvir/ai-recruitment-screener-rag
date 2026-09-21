@@ -2,9 +2,24 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BriefcaseBusiness, Building2, ArrowRight } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Building2,
+  ArrowRight,
+  UserRound,
+  Mail,
+  Gauge,
+  Check,
+  X,
+} from "lucide-react";
 
-export default function ChatMessage({ role, content, toolResult }) {
+export default function ChatMessage({
+  role,
+  content,
+  toolResult,
+  onSend,
+  loading,
+}) {
   const isUser = role === "user";
 
   return (
@@ -63,6 +78,20 @@ export default function ChatMessage({ role, content, toolResult }) {
                         <span>{job.companyName}</span>
                       </div>
                     )}
+
+                    {typeof job.matchScore === "number" && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="h-1.5 w-24 overflow-hidden rounded-full bg-slate-200">
+                          <div
+                            className="h-full rounded-full bg-blue-600"
+                            style={{ width: `${job.matchScore}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-blue-700">
+                          {job.matchScore}% match
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -85,6 +114,75 @@ export default function ChatMessage({ role, content, toolResult }) {
         {toolResult?.type === "jobs" && toolResult.items?.length === 0 && (
           <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
             No matching jobs found.
+          </div>
+        )}
+
+        {/* ====================================================== */}
+        {/* HITL: APPLY CONFIRMATION */}
+        {/* ====================================================== */}
+
+        {toolResult?.type === "apply_confirmation" && (
+          <div className="mt-4 space-y-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-blue-100 p-2">
+                <BriefcaseBusiness size={18} className="text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900">
+                  {toolResult.job?.title}
+                </h3>
+                {toolResult.job?.companyName && (
+                  <div className="mt-1 flex items-center gap-1 text-sm text-slate-500">
+                    <Building2 size={14} />
+                    <span>{toolResult.job.companyName}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 rounded-lg bg-white p-3 text-sm">
+              {(toolResult.applicant?.firstName ||
+                toolResult.applicant?.lastName) && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <UserRound size={14} />
+                  <span>
+                    {toolResult.applicant.firstName}{" "}
+                    {toolResult.applicant.lastName}
+                  </span>
+                </div>
+              )}
+              {toolResult.applicant?.email && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Mail size={14} />
+                  <span>{toolResult.applicant.email}</span>
+                </div>
+              )}
+              {typeof toolResult.matchScore === "number" && (
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Gauge size={14} />
+                  <span>{toolResult.matchScore}% estimated match</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => onSend?.("confirm")}
+                disabled={loading}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Check size={16} />
+                Confirm
+              </button>
+              <button
+                onClick={() => onSend?.("cancel")}
+                disabled={loading}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <X size={16} />
+                Cancel
+              </button>
+            </div>
           </div>
         )}
 
