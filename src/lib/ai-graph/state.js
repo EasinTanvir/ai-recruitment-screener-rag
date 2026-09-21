@@ -35,6 +35,7 @@ export const AgentState = Annotation.Root({
   // ---- job search ----
   jobResults: Annotation({ default: () => [] }), // last results shown to the user, with optional matchScore
   lastShownJobs: Annotation({ default: () => [] }), // kept stable for "apply to the 2nd one" resolution
+  searchKeyword: Annotation({ default: () => null }), // extracted, not raw user text
 
   // ---- parallel cv-matching scratch space ----
   candidateJobs: Annotation({ default: () => [] }),

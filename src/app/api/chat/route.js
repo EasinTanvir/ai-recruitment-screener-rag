@@ -13,11 +13,12 @@ export async function POST(req) {
 
   const user = await getCurrentUser(); // reads auth_token cookie server-side
   const config = { configurable: { thread_id: threadId } };
+  const isResume = resume !== undefined && resume !== null;
 
   let result;
 
-  if (resume !== undefined && resume !== null) {
-    // Resuming a paused (interrupted) graph — e.g. user typed "confirm"/"cancel"
+  if (isResume) {
+    // Resuming a paused (interrupted) graph — e.g. user tapped Confirm/Cancel
     result = await recruitingGraph.invoke(new Command({ resume }), config);
   } else {
     result = await recruitingGraph.invoke(
@@ -38,10 +39,15 @@ export async function POST(req) {
   const aiMessage = [...(result.messages ?? [])]
     .reverse()
     .find((m) => m instanceof AIMessage);
+  const message_ = pendingInterrupt
+    ? pendingInterrupt.message
+    : (aiMessage?.content ?? "");
 
-  // ---- job list to render as cards, if this turn produced one ----
+  // ---- job list to render, ONLY for a fresh turn that actually produced
+  // one — never on a resume turn, and never when we're mid-confirmation,
+  // otherwise stale checkpointed jobResults leak into unrelated replies ----
   let toolResult = null;
-  if (result.jobResults?.length) {
+  if (!pendingInterrupt && !isResume && result.jobResults?.length) {
     toolResult = {
       type: "jobs",
       items: result.jobResults.map((job) => ({
@@ -51,13 +57,9 @@ export async function POST(req) {
     };
   }
 
-  const messages = pendingInterrupt
-    ? pendingInterrupt.message
-    : (aiMessage?.content ?? "");
-
   return Response.json({
-    message: messages,
+    message: message_,
     toolResult,
-    interrupt: pendingInterrupt, // { type, job, applicant, matchScore, matchReason, question } | null
+    interrupt: pendingInterrupt,
   });
 }

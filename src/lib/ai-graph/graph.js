@@ -9,6 +9,8 @@ import { handleCvUpload } from "./nodes/handleCvUpload";
 import { prepareCandidates } from "./nodes/prepareCandidates";
 import { scoreJob } from "./nodes/scoreJob";
 import { aggregateScores } from "./nodes/aggregateScores";
+import { extractSearchKeyword } from "./nodes/extractSearchKeyword";
+import { askJobPreference } from "./nodes/askJobPreference";
 import { searchJobsByTitleNode } from "./nodes/searchJobsByTitleNode";
 import { presentResults } from "./nodes/presentResults";
 import { resolveApplyTarget } from "./nodes/resolveApplyTarget";
@@ -24,6 +26,8 @@ const builder = new StateGraph(AgentState)
   .addNode("prepareCandidates", prepareCandidates)
   .addNode("scoreJob", scoreJob)
   .addNode("aggregateScores", aggregateScores)
+  .addNode("extractSearchKeyword", extractSearchKeyword)
+  .addNode("askJobPreference", askJobPreference)
   .addNode("searchJobsByTitleNode", searchJobsByTitleNode)
   .addNode("presentResults", presentResults)
   .addNode("resolveApplyTarget", resolveApplyTarget)
@@ -41,9 +45,19 @@ const builder = new StateGraph(AgentState)
     GENERAL: "generalChat",
     CV_SEARCH: "handleCvUpload",
     RESUME_APPLY_WITH_CV: "handleCvUpload",
-    JOB_SEARCH_TEXT: "searchJobsByTitleNode",
+    RESUME_APPLY_READY: "buildConfirmation",
+    JOB_SEARCH_TEXT: "extractSearchKeyword",
     APPLY_INTENT: "resolveApplyTarget",
   })
+
+  // does the message actually name a role/skill, or is it vague ("I'm
+  // looking for a job")? avoids blindly querying the DB with raw text.
+  .addConditionalEdges(
+    "extractSearchKeyword",
+    (state) => (state.searchKeyword ? "HAS" : "NONE"),
+    { HAS: "searchJobsByTitleNode", NONE: "askJobPreference" },
+  )
+  .addEdge("askJobPreference", END)
 
   // after a CV upload: either continue an in-flight apply, or run the
   // general "match me against open jobs" flow
@@ -92,8 +106,6 @@ const builder = new StateGraph(AgentState)
   .addEdge("needLogin", END)
   .addEdge("needCv", END)
 
-  // buildConfirmation pauses on interrupt(); once resumed it sets
-  // state.route to DO_APPLY / DO_CANCEL and we branch from there
   .addConditionalEdges("buildConfirmation", (state) => state.route ?? "STOP", {
     DO_APPLY: "applyJobNode",
     DO_CANCEL: "cancelNode",

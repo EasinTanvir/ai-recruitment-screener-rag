@@ -11,17 +11,23 @@ export async function clarifyApplyTarget(state) {
   );
 }
 
-export async function needLogin() {
-  return reply(
-    "You'll need to log in first to apply — once you're logged in, come back and tell me and I'll pick up right where we left off.",
-  );
-}
-
-export async function needCv(state) {
+export async function needLogin(state) {
   return {
     pendingApplyJobId: state.selectedJobId,
     ...reply(
-      "Please upload your CV (PDF) using the upload button here in the chat, and I'll get your application ready for that role.",
+      "You'll need to log in first to apply — once you're logged in, just say anything here and I'll pick up right where we left off.",
+    ),
+  };
+}
+
+export async function needCv(state) {
+  const job = state.lastShownJobs?.find((j) => j.id === state.selectedJobId);
+  const jobLabel = job ? ` for **${job.title}**` : "";
+
+  return {
+    pendingApplyJobId: state.selectedJobId,
+    ...reply(
+      `Please upload your CV (PDF) using the 📎 button here in the chat, and I'll get your application ready${jobLabel}.`,
     ),
   };
 }

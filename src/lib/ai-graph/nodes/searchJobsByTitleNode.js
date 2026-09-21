@@ -1,8 +1,8 @@
 import { searchJobsByTitle } from "@/lib/ai/queries/jobs";
-import { getLastHumanText, reply } from "../lib/helpers";
+import { reply } from "../lib/helpers";
 
 export async function searchJobsByTitleNode(state) {
-  const query = getLastHumanText(state.messages);
+  const query = state.searchKeyword;
   const jobs = await searchJobsByTitle(query);
 
   if (!jobs.length) {
@@ -10,7 +10,7 @@ export async function searchJobsByTitleNode(state) {
       jobResults: [],
       lastShownJobs: [],
       ...reply(
-        `I couldn't find any published jobs matching "${query}". Try a different title, or upload your CV and I'll match you against everything open.`,
+        `I couldn't find any published jobs matching "${query}". Try a different title or a broader skill, or upload your CV and I'll match you against everything open.`,
       ),
     };
   }

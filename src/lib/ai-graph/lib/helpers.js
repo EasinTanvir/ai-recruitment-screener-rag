@@ -1,5 +1,7 @@
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 
+export const CONTEXT_WINDOW = 10;
+
 export function getLastHumanText(messages = []) {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
@@ -14,9 +16,26 @@ export function reply(text) {
   return { messages: [new AIMessage(text)] };
 }
 
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+export function extractEmailFallback(text) {
+  const match = text.match(EMAIL_RE);
+  return match ? match[0] : null;
+}
+
 // Very cheap ordinal/title matcher so "apply to the 2nd one" or
 // "I want the Frontend Developer role" both resolve without an LLM call.
-const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "first", "second", "third", "fourth", "fifth"];
+const ORDINALS = [
+  "1st",
+  "2nd",
+  "3rd",
+  "4th",
+  "5th",
+  "first",
+  "second",
+  "third",
+  "fourth",
+  "fifth",
+];
 
 export function resolveJobFromText(text, jobs = []) {
   if (!jobs.length) return null;
@@ -35,7 +54,6 @@ export function resolveJobFromText(text, jobs = []) {
     }
   }
 
-  // fallback: fuzzy title / company containment either direction
   const byTitle = jobs.find(
     (j) =>
       lower.includes(j.title.toLowerCase()) ||
