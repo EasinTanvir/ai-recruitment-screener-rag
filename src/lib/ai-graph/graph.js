@@ -46,6 +46,8 @@ const builder = new StateGraph(AgentState)
     CV_SEARCH: "handleCvUpload",
     RESUME_APPLY_WITH_CV: "handleCvUpload",
     RESUME_APPLY_READY: "buildConfirmation",
+    RESUME_APPLY_NEEDS_CV: "needCv",
+    CV_MATCH_SEARCH: "prepareCandidates",
     JOB_SEARCH_TEXT: "extractSearchKeyword",
     APPLY_INTENT: "resolveApplyTarget",
   })

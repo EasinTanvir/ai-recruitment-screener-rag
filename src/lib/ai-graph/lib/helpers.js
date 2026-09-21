@@ -1,6 +1,8 @@
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 
-export const CONTEXT_WINDOW = 10;
+// Keep enough recent turns for references such as "the other one", while
+// still keeping prompts bounded as a conversation becomes long.
+export const CONTEXT_WINDOW = 15;
 
 export function getLastHumanText(messages = []) {
   for (let i = messages.length - 1; i >= 0; i--) {

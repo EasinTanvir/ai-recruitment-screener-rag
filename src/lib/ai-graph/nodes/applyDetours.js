@@ -21,11 +21,15 @@ export async function needLogin(state) {
 }
 
 export async function needCv(state) {
-  const job = state.lastShownJobs?.find((j) => j.id === state.selectedJobId);
+  const jobId = state.pendingApplyJobId ?? state.selectedJobId;
+  const job = state.lastShownJobs?.find((j) => j.id === jobId);
   const jobLabel = job ? ` for **${job.title}**` : "";
 
   return {
-    pendingApplyJobId: state.selectedJobId,
+    // Restore both ids so an authentication detour cannot lose the job the
+    // user chose before uploading their CV.
+    selectedJobId: jobId,
+    pendingApplyJobId: jobId,
     ...reply(
       `Please upload your CV (PDF) using the 📎 button here in the chat, and I'll get your application ready${jobLabel}.`,
     ),
