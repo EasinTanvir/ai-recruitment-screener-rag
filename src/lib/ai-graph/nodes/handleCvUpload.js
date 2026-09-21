@@ -22,6 +22,55 @@ const extractor = structuredModel.withStructuredOutput(CvProfileSchema, {
   method: "functionCalling",
 });
 
+const ROLE_PATTERNS = [
+  /\bfull[\s-]?stack\s+(?:engineer|developer)\b/gi,
+  /\b(?:front[\s-]?end|frontend)\s+(?:engineer|developer)\b/gi,
+  /\b(?:back[\s-]?end|backend)\s+(?:engineer|developer)\b/gi,
+  /\bmern\s+(?:stack\s+)?developer\b/gi,
+  /\b(?:devops|database|software|python|java|mobile)\s+(?:engineer|developer)\b/gi,
+];
+
+const SKILL_SEARCH_TERMS = [
+  "React",
+  "Next.js",
+  "Node.js",
+  "Python",
+  "Java",
+  "DevOps",
+  "Database",
+  "AWS",
+  "Docker",
+];
+
+function uniqueTerms(terms) {
+  return [...new Set(terms.filter(Boolean).map((term) => term.trim()))];
+}
+
+// The profile model is useful enrichment, but it must not be the only way a
+// CV can start a search. Tool-call parsing can occasionally fail even when
+// the PDF text is perfectly readable, so derive searchable terms locally too.
+function extractCvSearchTerms(resumeText) {
+  const terms = [];
+
+  for (const pattern of ROLE_PATTERNS) {
+    for (const match of resumeText.matchAll(pattern)) {
+      const role = match[0].replace(/\s+/g, " ").trim();
+      if (/^full[\s-]?stack/i.test(role)) terms.push("Full Stack");
+      else if (/^mern/i.test(role)) terms.push("MERN");
+      else terms.push(role.replace(/\s+(engineer|developer)$/i, ""));
+    }
+  }
+
+  for (const skill of SKILL_SEARCH_TERMS) {
+    const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (new RegExp(`\\b${escaped}\\b`, "i").test(resumeText)) {
+      terms.push(skill);
+    }
+  }
+
+  return uniqueTerms(terms);
+}
+
 export async function handleCvUpload(state) {
   // ---- step 1: download + extract raw text — a real failure here means
   // we genuinely can't read the file, so it's fair to stop and tell the user ----
@@ -42,12 +91,13 @@ export async function handleCvUpload(state) {
 
   // ---- step 2: structured profile extraction — a failure here is NOT a
   // "bad PDF", it's the LLM call. Degrade gracefully instead of blocking. ----
+  const fallbackSearchTerms = extractCvSearchTerms(resumeText);
   const fallbackProfile = {
     firstName: null,
     lastName: null,
     email: extractEmailFallback(resumeText),
-    title: "",
-    skills: [],
+    title: fallbackSearchTerms[0] ?? "",
+    skills: fallbackSearchTerms.slice(1),
     yearsExperience: null,
   };
 
@@ -69,7 +119,17 @@ export async function handleCvUpload(state) {
   return {
     resumeUrl: state.incomingResumeUrl,
     resumeText,
-    cvProfile,
+    cvProfile: {
+      ...cvProfile,
+      // Keep LLM-extracted detail while guaranteeing terms for a CV-driven
+      // search when the structured result was partial or used a different
+      // spelling than the job title.
+      searchTerms: uniqueTerms([
+        cvProfile.title,
+        ...(cvProfile.skills ?? []),
+        ...fallbackSearchTerms,
+      ]),
+    },
     incomingResumeUrl: null,
     cvParseError: null,
   };
