@@ -13,6 +13,74 @@ import {
   X,
 } from "lucide-react";
 
+function InlineText({ text }) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={index} className="font-semibold text-slate-950">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={index}>{part}</span>
+    ),
+  );
+}
+
+function AssistantContent({ content }) {
+  const lines = content.split("\n");
+
+  return (
+    <div className="space-y-2 text-sm leading-6">
+      {lines.map((line, index) => {
+        const trimmed = line.trim();
+        if (!trimmed) return <div key={`space-${index}`} className="h-1" />;
+
+        const isUploadPrompt = /upload (your |a )?cv|upload (your |a )?resume/i.test(trimmed);
+        const isLoginPrompt = /log in|sign in/i.test(trimmed);
+        const isSuccess = /application submitted|successfully applied/i.test(trimmed);
+        const isHeading = /^#{1,3}\s+/.test(trimmed);
+        const listMatch = trimmed.match(/^(?:[-*]|\d+[.)])\s+(.+)/);
+
+        if (isUploadPrompt || isLoginPrompt || isSuccess) {
+          const tone = isUploadPrompt
+            ? "border-rose-200 bg-rose-50 text-rose-800"
+            : isLoginPrompt
+              ? "border-amber-200 bg-amber-50 text-amber-800"
+              : "border-emerald-200 bg-emerald-50 text-emerald-800";
+
+          return (
+            <div key={index} className={`rounded-lg border px-3 py-2 font-semibold ${tone}`}>
+              <InlineText text={trimmed.replace(/^#{1,3}\s+/, "")} />
+            </div>
+          );
+        }
+
+        if (isHeading) {
+          return (
+            <h3 key={index} className="pt-1 text-base font-bold text-blue-700">
+              <InlineText text={trimmed.replace(/^#{1,3}\s+/, "")} />
+            </h3>
+          );
+        }
+
+        if (listMatch) {
+          return (
+            <div key={index} className="flex gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-slate-700">
+              <span className="font-bold text-blue-600">•</span>
+              <span><InlineText text={listMatch[1]} /></span>
+            </div>
+          );
+        }
+
+        return (
+          <p key={index}>
+            <InlineText text={trimmed} />
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ChatMessage({
   role,
   content,
@@ -46,9 +114,12 @@ export default function ChatMessage({
       >
         {/* Message */}
 
-        {!!content && (
-          <p className="whitespace-pre-wrap text-sm leading-6">{content}</p>
-        )}
+        {!!content &&
+          (isUser ? (
+            <p className="whitespace-pre-wrap text-sm leading-6">{content}</p>
+          ) : (
+            <AssistantContent content={content} />
+          ))}
 
         {/* ====================================================== */}
         {/* JOB RESULTS */}
