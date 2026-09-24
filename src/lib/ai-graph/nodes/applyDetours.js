@@ -15,7 +15,7 @@ export async function needLogin(state) {
   return {
     pendingApplyJobId: state.selectedJobId,
     ...reply(
-      "You'll need to log in first to apply — once you're logged in, just say anything here and I'll pick up right where we left off.",
+      "You'll need to log in first to apply — once you're logged in, you can continue the process.",
     ),
   };
 }
