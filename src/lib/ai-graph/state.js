@@ -10,6 +10,8 @@ import { Annotation, messagesStateReducer } from "@langchain/langgraph";
  * we explicitly null-out fields when we want to "consume"/clear them.
  */
 export const AgentState = Annotation.Root({
+  blocked: Annotation({ default: () => false }),
+
   // ---- conversation ----
   messages: Annotation({
     reducer: messagesStateReducer,
@@ -35,7 +37,6 @@ export const AgentState = Annotation.Root({
   // ---- job search ----
   jobResults: Annotation({ default: () => [] }), // last results shown to the user, with optional matchScore
   lastShownJobs: Annotation({ default: () => [] }), // kept stable for "apply to the 2nd one" resolution
-  searchKeyword: Annotation({ default: () => null }), // extracted, not raw user text
 
   // ---- parallel cv-matching scratch space ----
   candidateJobs: Annotation({ default: () => [] }),

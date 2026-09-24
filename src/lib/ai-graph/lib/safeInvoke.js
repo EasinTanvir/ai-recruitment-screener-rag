@@ -1,17 +1,12 @@
-/**
- * Wraps a `.withStructuredOutput(...)`-bound model so a malformed/unparsable
- * generation (Groq's `output_parse_failed` / `json_validate_failed`, or a
- * transient network error) degrades to a sensible fallback instead of
- * throwing all the way up to the API route.
- */
-export async function safeStructured(boundModel, messages, fallback, label) {
-  try {
-    return await boundModel.invoke(messages);
-  } catch (err) {
-    console.error(
-      `[safeStructured:${label}] falling back —`,
-      err?.message || err,
-    );
-    return fallback;
+export async function safeStructured(model, messages, fallback, label) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await model.invoke(messages);
+    } catch (err) {
+      if (attempt === 1) {
+        console.error(`[safeStructured:${label}] falling back —`, err.message);
+        return fallback;
+      }
+    }
   }
 }

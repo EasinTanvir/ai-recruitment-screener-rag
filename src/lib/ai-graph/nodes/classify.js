@@ -2,18 +2,16 @@ import { z } from "zod";
 import { structuredModel } from "../lib/models";
 import { getLastHumanText, CONTEXT_WINDOW } from "../lib/helpers";
 import { safeStructured } from "../lib/safeInvoke";
+import { RESPONSE_FORMATTING } from "../lib/formatting";
 
 const RouteSchema = z.object({
-  route: z
-    .enum(["OFFTOPIC", "GENERAL", "JOB_SEARCH_TEXT", "APPLY_INTENT"])
-    .describe("Best matching route for the user's latest message"),
+  route: z.enum(["OFFTOPIC", "CHAT", "APPLY_INTENT"]),
 });
 
 const router = structuredModel.withStructuredOutput(RouteSchema, {
   name: "route_classification",
-  method: "functionCalling",
+  method: "jsonMode", // instead of "functionCalling"
 });
-
 function isCvRecommendationRequest(text) {
   const normalized = text.toLowerCase().trim();
 
@@ -36,42 +34,30 @@ function isApplyReference(text) {
   );
 }
 
+// nodes/classify.js
 const SYSTEM = `You are the intent router for a recruiting-platform chatbot.
 Classify the user's LATEST message into exactly one route, using the recent
 conversation for context (e.g. if the assistant just listed jobs and asked
 which one to apply to, a reply like "the second one" or a job title is
-APPLY_INTENT, not JOB_SEARCH_TEXT).
+APPLY_INTENT, not a general chat message).
+
+Respond ONLY with a JSON object of the form:
+{ "route": "OFFTOPIC" | "CHAT" | "APPLY_INTENT" }
 
 Routes:
-- JOB_SEARCH_TEXT: user describes a role/skill/title they want, or asks what
-  jobs are open ("frontend roles?", "any React jobs", "show me openings"),
-  including vague statements like "I'm looking for a job" (a later step will
-  ask them to be specific — you just need to route it here).
+- CHAT: anything on-topic that isn't a direct apply intent — describing a
+  role/skill ("React jobs?"), vague job-search ("I'm looking for a job"),
+  platform questions, greetings. The chat assistant has its own search
+  tool, so don't separate "wants to search" from "just chatting."
 - APPLY_INTENT: user wants to apply / proceed with a specific job they were
   just shown, or names a job to apply to.
-- GENERAL: on-topic questions about the platform, applying process, this
-  assistant's capabilities, greetings, "what can you do".
 - OFFTOPIC: anything unrelated to jobs/careers/this platform (weather,
   politics, coding help, personal chit-chat unrelated to job search, etc).
 
-Always prefer JOB_SEARCH_TEXT or APPLY_INTENT when there is any reasonable
-reading that fits — this platform's whole purpose is job search.
+Always prefer CHAT or APPLY_INTENT when there is any reasonable reading
+that fits — this platform's whole purpose is job search.
 
-When you want to draw attention to something, wrap ONLY the specific phrase 
-(never a whole sentence) in one of these markers:
-
-- :danger[...]   → blocking errors / failures        (red)
-- :warn[...]     → a required action before continuing, e.g. login  (amber)
-- :success[...]  → confirmations, e.g. application submitted        (green)
-- :info[...]     → a neutral callout worth noticing                 (blue)
-- :highlight[...]→ emphasize one key term                           (yellow)
-
-Example:
-"You can browse jobs without an account, but :warn[you'll need to log in] 
-before uploading your CV."
-
-Use normal markdown (##, **, -, numbered lists) for everything else.
-Use these sparingly — a few words, not paragraphs.
+${RESPONSE_FORMATTING}
 `;
 
 export async function classify(state) {
@@ -98,7 +84,7 @@ export async function classify(state) {
 
   const lastText = getLastHumanText(state.messages).trim();
   if (!lastText) {
-    return { ...base, route: "GENERAL" };
+    return { ...base, route: "CHAT" };
   }
 
   if (
@@ -123,7 +109,7 @@ export async function classify(state) {
         content: typeof m.content === "string" ? m.content : "",
       })),
     ],
-    { route: "GENERAL" }, // fail-safe default if the model output can't be parsed
+    { route: "CHAT" }, // fail-safe default if the model output can't be parsed
     "classify",
   );
 
