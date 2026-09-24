@@ -30,5 +30,6 @@ export async function searchJobsByTitle(title) {
         or(...words.map((w) => ilike(jobs.title, `%${w}%`))),
       ),
     )
-    .orderBy(desc(matchScore));
+    .orderBy(desc(matchScore))
+    .limit(4);
 }
