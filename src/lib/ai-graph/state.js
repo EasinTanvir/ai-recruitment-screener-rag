@@ -9,6 +9,7 @@ import { Annotation, messagesStateReducer } from "@langchain/langgraph";
  * on this for cross-turn memory (resumeUrl, pendingApplyJobId, etc.) and
  * we explicitly null-out fields when we want to "consume"/clear them.
  */
+
 export const AgentState = Annotation.Root({
   blocked: Annotation({ default: () => false }),
 
